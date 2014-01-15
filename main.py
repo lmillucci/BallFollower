@@ -20,11 +20,54 @@ blurWindow="Immagine con filtro Blur"
 
 #------ IMPOSTAZIONI ELABORAZIONE ----------
 enableElab=False
+#------ IMPOSTAZIONI GPIO --------
+io.setmode(io.BCM)
+
+io.cleanup() 
+
+in1_pin = 4
+in2_pin = 17
+pwm_pin= 23
+in3_pin = 24
+in4_pin = 25
+pwm2_pin = 22
+ 
+io.setup(in1_pin, io.OUT)
+io.setup(in2_pin, io.OUT)
+io.setup(pwm_pin, io.OUT)
+io.setup(in3_pin, io.OUT)
+io.setup(in4_pin, io.OUT)
+io.setup(pwm2_pin, io.OUT)
+p=io.PWM(pwm_pin, 500)
+q=io.PWM(pwm2_pin, 500)
 
 def onTrackbarSlide(*args):
     pass
 
 
+
+
+
+def changeSpeed(value1, value2 ):
+	p.ChangeDutyCycle(value1)
+	q.ChangeDutyCycle(value2)
+
+ #motore 1
+def clockwise():
+    io.output(in1_pin, True)    
+    io.output(in2_pin, False)
+ 
+def counter_clockwise():
+    io.output(in1_pin, False)
+    io.output(in2_pin, True)
+#motore 2
+def orario():
+	io.output(in3_pin,True)
+	io.output(in4_pin,False)
+	
+def antiorario():
+	io.output(in3_pin,False)
+	io.output(in4_pin,True)
 
 
 def createSlider():
@@ -42,13 +85,19 @@ def createSlider():
 
 
 # ------- MAIN -------------
-
+#inizializzo i pgin gpio
+p.start(0)
+p.ChangeDutyCycle(100)
+q.start(0)
+q.ChangeDutyCycle(100)
 
 cv2.namedWindow(mainGui,1)
 #imposto la sorgente per l'acquisizione
 # 0 -> cam predefinita
 # 1 -> cam esterna
 capture = cv2.VideoCapture(0);
+capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 320)
+capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 240)
 width,height = capture.get(3),capture.get(4)
 
 createSlider()
@@ -111,16 +160,22 @@ while True:
 		#se x e minore di 640/3=213-->220 vuol dire che la pallina e troppo a SX
 		if x < 220:
 			#giro a sx
-			pass
+			clockwise()
+			antiorario()
 		elif x > 420:
 			#giro a dx
-			pass
+			counter_clockwise()
+			orario()
+		else:
+			#vado avanti
+			antiorario()
+			counter_clockwise()
 			
 	#visualizzo le immagini 
 	cv2.imshow(mainGui,cameraFeed)
 	#cv2.imshow(hsvWindow, hsvFrame)
 	cv2.imshow(thresholdWindow,thresholded)
 	
-	if cv2.waitKey(33)==27:
+	if cv2.waitKey(200)==27:
 		break
 	
