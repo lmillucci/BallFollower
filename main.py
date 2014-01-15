@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
 import cv2
+import RPi.GPIO as io
 
 #------ VALORI PREDEFINITI --------
 H_MIN = 26
@@ -107,11 +108,11 @@ while True:
 		#cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
 		cv2.circle(cameraFeed, (x,y), maxRadius, (0,255,0),2)
 		
-		#se x è minore di 640/3=213-->220 vuol dire che la pallina e troppo a SX
+		#se x e minore di 640/3=213-->220 vuol dire che la pallina e troppo a SX
 		if x < 220:
 			#giro a sx
 			pass
-		else if x > 420:
+		elif x > 420:
 			#giro a dx
 			pass
 			
