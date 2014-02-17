@@ -11,6 +11,9 @@ H_MAX = 256
 S_MAX = 256
 V_MAX = 256
 
+IMAGE_WIDTH=160
+IMAGE_HEIGHT=120
+
 #------ FINESTRE -----------
 mainGui="Immagine acquisita"
 hsvWindow="Immagine HSV"
@@ -87,17 +90,16 @@ def createSlider():
 # ------- MAIN -------------
 #inizializzo i pgin gpio
 p.start(0)
-p.ChangeDutyCycle(100)
+p.ChangeDutyCycle(0)
 q.start(0)
-q.ChangeDutyCycle(100)
+q.ChangeDutyCycle(0)
 
 cv2.namedWindow(mainGui,1)
 #imposto la sorgente per l'acquisizione
 # 0 -> cam predefinita
 # 1 -> cam esterna
 capture = cv2.VideoCapture(0);
-capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 320)
-capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 240)
+
 width,height = capture.get(3),capture.get(4)
 
 createSlider()
@@ -105,12 +107,21 @@ createSlider()
 rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(3,3))
 rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(8,8))
 
+#creo il range in cui la pallina e a dx o sx
+dx_margin=2/3*IMAGE_WIDTH
+sx_margin=1/3*IMAGE_WIDTH
+#variabile per abilitare i motori
+enableMotor=False
+
 #loop principale del programma
 while True:
+
 	#definisco la variabile per i frame catturati
+	capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
+	#capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_HEIGHT)
 	_,cameraFeed = capture.read()
 	cameraFeed = cv2.flip(cameraFeed,1)
-	
+
 	#variabile su cui salvo l'immagine HSV
 	hsvFrame = cv2.cvtColor(cameraFeed,cv2.COLOR_BGR2HSV)
 
@@ -137,12 +148,12 @@ while True:
 	
 	#ATTENZIONE circles e una matrice 1xnx3
 	#print circles
-	
+	found=False
 	if circles is not None:
 		maxRadius=0
 		x=0
 		y=0
-		found=False
+		
 		for i in range(circles.size/3):
 			circle=circles[0,i]
 			if circle[2]>maxRadius:
@@ -153,29 +164,46 @@ while True:
 				y=int(circle[1])
 			
 			
-	if found:
+	if found and enableMotor:
 		#cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
 		cv2.circle(cameraFeed, (x,y), maxRadius, (0,255,0),2)
-		
+		changeSpeed(80,80)
 		#se x e minore di 640/3=213-->220 vuol dire che la pallina e troppo a SX
-		if x < 220:
+		if x < sx_margin:
 			#giro a sx
+			print "giro sx"
 			clockwise()
 			antiorario()
-		elif x > 420:
+		elif x > dx_margin:
 			#giro a dx
+			print "giro dx"
 			counter_clockwise()
 			orario()
 		else:
 			#vado avanti
-			antiorario()
-			counter_clockwise()
+			#antiorario()
+			#counter_clockwise()
+			print "vado avanti"
 			
 	#visualizzo le immagini 
 	cv2.imshow(mainGui,cameraFeed)
 	#cv2.imshow(hsvWindow, hsvFrame)
 	cv2.imshow(thresholdWindow,thresholded)
-	
-	if cv2.waitKey(200)==27:
+	t=125
+	if cv2.waitKey(125)==27:
 		break
+		
+	if cv2.waitKey(t)==109:
+		enableMotor= not enableMotor
+		print "enable motor = " 
+		print enableMotor
+		if not enableMotor:
+			
+			t=375
+	#alla fine del circlo mi fermo 
+	changeSpeed(0,0)
+	
+p.stop()
+q.stop()
+io.cleanup()
 	
