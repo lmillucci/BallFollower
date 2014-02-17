@@ -49,8 +49,6 @@ def onTrackbarSlide(*args):
 
 
 
-
-
 def changeSpeed(value1, value2 ):
 	p.ChangeDutyCycle(value1)
 	q.ChangeDutyCycle(value2)
@@ -107,9 +105,12 @@ createSlider()
 rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(3,3))
 rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(8,8))
 
-#creo il range in cui la pallina e a dx o sx
-dx_margin=2/3*IMAGE_WIDTH
-sx_margin=1/3*IMAGE_WIDTH
+#Variabili istanza
+target=IMAGE_WIDTH/2
+delta_t=125
+e_old=0
+integr_e=0
+
 #variabile per abilitare i motori
 enableMotor=False
 
@@ -164,42 +165,52 @@ while True:
 				y=int(circle[1])
 			
 			
-	if found and enableMotor:
+	if found:
 		#cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
 		cv2.circle(cameraFeed, (x,y), maxRadius, (0,255,0),2)
-		changeSpeed(80,80)
-		#se x e minore di 640/3=213-->220 vuol dire che la pallina e troppo a SX
-		if x < sx_margin:
-			#giro a sx
-			print "giro sx"
-			clockwise()
-			antiorario()
-		elif x > dx_margin:
-			#giro a dx
-			print "giro dx"
-			counter_clockwise()
-			orario()
-		else:
-			#vado avanti
-			#antiorario()
-			#counter_clockwise()
-			print "vado avanti"
+		print "Le coordinate del centro sono: ("+ str(x) +"," + str(y)+")"
+		if enableMotor:
+			
+			e = x-target #variabile errore >0 oggetto a dx
+										#<0 oggetto a sx
+			Kp=100
+			u = int(Kp * (abs(e)/(target *1.0)))
+
+			changeSpeed(u,u)
+			print "Valocita = "+str(u)+ " errore = "+str(e)+ " abs = "+str(abs(e)/(target*1.0))
+			
+			#se x e minore di 640/3=213-->220 vuol dire che la pallina e troppo a SX
+			if e < -10:
+				#giro a sx
+				print "giro sx"
+				clockwise()
+				antiorario()
+			elif e > 10:
+				#giro a dx
+				print "giro dx"
+				counter_clockwise()
+				orario()
+			else:
+				#vado avanti
+				#antiorario()
+				#counter_clockwise()
+				print "vado avanti"
 			
 	#visualizzo le immagini 
 	cv2.imshow(mainGui,cameraFeed)
 	#cv2.imshow(hsvWindow, hsvFrame)
 	cv2.imshow(thresholdWindow,thresholded)
-	t=125
+	
 	if cv2.waitKey(125)==27:
 		break
 		
-	if cv2.waitKey(t)==109:
+	if cv2.waitKey(delta_t)==109:
 		enableMotor= not enableMotor
 		print "enable motor = " 
 		print enableMotor
 		if not enableMotor:
 			
-			t=375
+			delta_t=375
 	#alla fine del circlo mi fermo 
 	changeSpeed(0,0)
 	
