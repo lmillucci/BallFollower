@@ -82,6 +82,7 @@ def createSlider():
 	cv2.createTrackbar("H-max",settingWindow, H_MAX, 256, onTrackbarSlide)
 	cv2.createTrackbar("S-max",settingWindow, S_MAX, 256,onTrackbarSlide)
 	cv2.createTrackbar("V-max",settingWindow, V_MAX, 256,onTrackbarSlide)
+	cv2.createTrackbar("Motori I/O",settingWindow,0,1,onTrackbarSlide)
 	
 
 
@@ -107,12 +108,11 @@ rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(8,8))
 
 #Variabili istanza
 target=IMAGE_WIDTH/2
-delta_t=125
-e_old=0
-integr_e=0
+delta_t=250
+
 
 #variabile per abilitare i motori
-enableMotor=False
+enableMotor=0
 
 #loop principale del programma
 while True:
@@ -125,9 +125,6 @@ while True:
 
 	#variabile su cui salvo l'immagine HSV
 	hsvFrame = cv2.cvtColor(cameraFeed,cv2.COLOR_BGR2HSV)
-
-
-	
 
 	#filtro hsvFrame cercando solo un determinato range di colori
 	minColor=np.array((cv2.getTrackbarPos("H-min",settingWindow),cv2.getTrackbarPos("S-min",settingWindow),cv2.getTrackbarPos("V-min",settingWindow)))
@@ -143,6 +140,9 @@ while True:
 		cv2.dilate(thresholded, thresholded, rectDilataz)
 		cv2.dilate(thresholded, thresholded, rectDilataz)
 		cv2.dilate(thresholded, thresholded, rectDilataz)
+	
+	#Verifico se attivare il motore
+	enableMotor=cv2.getTrackbarPos("Motori I/O",settingWindow)
 	
 	#applico Hough
 	circles = cv2.HoughCircles(thresholded, cv2.cv.CV_HOUGH_GRADIENT, dp=2, minDist=120, param1=100, param2=40, minRadius=10, maxRadius=60)
@@ -195,22 +195,20 @@ while True:
 				#antiorario()
 				#counter_clockwise()
 				print "vado avanti"
+				changeSpeed(80,80)
 			
 	#visualizzo le immagini 
 	cv2.imshow(mainGui,cameraFeed)
 	#cv2.imshow(hsvWindow, hsvFrame)
 	cv2.imshow(thresholdWindow,thresholded)
 	
-	if cv2.waitKey(125)==27:
+	if cv2.waitKey(delta_t)==27:
 		break
 		
-	if cv2.waitKey(delta_t)==109:
-		enableMotor= not enableMotor
-		print "enable motor = " 
-		print enableMotor
-		if not enableMotor:
-			
-			delta_t=375
+	if enableMotor:
+		#Se attivo enableMotor rallento gli FPS	
+		delta_t=375
+		
 	#alla fine del circlo mi fermo 
 	changeSpeed(0,0)
 	
