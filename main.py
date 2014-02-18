@@ -87,11 +87,17 @@ def createSlider():
 
 
 # ------- MAIN -------------
-#inizializzo i pgin gpio
+#inizializzo i pin gpio
 p.start(0)
 p.ChangeDutyCycle(0)
 q.start(0)
 q.ChangeDutyCycle(0)
+
+
+enableMotor=0 #variabile per abilitare i motori
+
+target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
+delta_t=250 #intervallo di tempo prima di passare al frame successivo
 
 cv2.namedWindow(mainGui,1)
 #imposto la sorgente per l'acquisizione
@@ -106,20 +112,13 @@ createSlider()
 rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(3,3))
 rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(8,8))
 
-#Variabili istanza
-target=IMAGE_WIDTH/2
-delta_t=250
 
-
-#variabile per abilitare i motori
-enableMotor=0
 
 #loop principale del programma
 while True:
 
 	#definisco la variabile per i frame catturati
 	capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
-	#capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_HEIGHT)
 	_,cameraFeed = capture.read()
 	cameraFeed = cv2.flip(cameraFeed,1)
 
@@ -179,7 +178,7 @@ while True:
 			changeSpeed(u,u)
 			print "Valocita = "+str(u)+ " errore = "+str(e)+ " abs = "+str(abs(e)/(target*1.0))
 			
-			#se x e minore di 640/3=213-->220 vuol dire che la pallina e troppo a SX
+			#decido la direzione da prendere. Uso +-10 e non 0 per avere un minimo di tolleranza
 			if e < -10:
 				#giro a sx
 				print "giro sx"
@@ -192,24 +191,25 @@ while True:
 				orario()
 			else:
 				#vado avanti
-				#antiorario()
-				#counter_clockwise()
 				print "vado avanti"
 				changeSpeed(80,80)
+				#antiorario()
+				#counter_clockwise()
 			
 	#visualizzo le immagini 
-	cv2.imshow(mainGui,cameraFeed)
-	#cv2.imshow(hsvWindow, hsvFrame)
-	cv2.imshow(thresholdWindow,thresholded)
+	cv2.imshow(mainGui,cameraFeed) #immagine acquisita
+	#cv2.imshow(hsvWindow, hsvFrame) #immagine con colori HSV
+	cv2.imshow(thresholdWindow,thresholded) #immagine Threshold
 	
+	#aspetto per un delta_t se l'utente preme ESC per uscire
 	if cv2.waitKey(delta_t)==27:
 		break
 		
 	if enableMotor:
-		#Se attivo enableMotor rallento gli FPS	
+		#Se attivo enableMotor abbasso il numero di FPS	acquisiti
 		delta_t=375
 		
-	#alla fine del circlo mi fermo 
+	#alla fine del circlo fermo i motori
 	changeSpeed(0,0)
 	
 p.stop()
