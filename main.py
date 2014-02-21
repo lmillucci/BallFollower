@@ -2,6 +2,7 @@
 import numpy as np
 import cv2
 import RPi.GPIO as io
+import time
 
 #------ VALORI PREDEFINITI --------
 H_MIN = 26
@@ -116,11 +117,14 @@ rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(8,8))
 
 #loop principale del programma
 while True:
-
+	time.sleep(1)
 	#definisco la variabile per i frame catturati
 	capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
+
 	_,cameraFeed = capture.read()
 	cameraFeed = cv2.flip(cameraFeed,1)
+
+		
 
 	#variabile su cui salvo l'immagine HSV
 	hsvFrame = cv2.cvtColor(cameraFeed,cv2.COLOR_BGR2HSV)
@@ -180,7 +184,7 @@ while True:
 			
 			#decido la direzione da prendere. Uso +-10 e non 0 per avere un minimo di tolleranza
 			if e < -10:
-				#giro a sx
+				#giro a dx
 				print "giro sx"
 				clockwise()
 				antiorario()
