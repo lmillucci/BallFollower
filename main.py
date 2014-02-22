@@ -117,7 +117,7 @@ rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(8,8))
 
 #loop principale del programma
 while True:
-	time.sleep(1)
+	time.sleep(1) #dopo un movimento aspetto un secondo per fissare l'immagine
 	#definisco la variabile per i frame catturati
 	capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
 
@@ -212,6 +212,8 @@ while True:
 	if enableMotor:
 		#Se attivo enableMotor abbasso il numero di FPS	acquisiti
 		delta_t=375
+	else:
+		delta_t=250
 		
 	#alla fine del circlo fermo i motori
 	changeSpeed(0,0)
