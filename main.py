@@ -12,8 +12,8 @@ H_MAX = 256
 S_MAX = 256
 V_MAX = 256
 
-IMAGE_WIDTH=160
-IMAGE_HEIGHT=120
+IMAGE_WIDTH=320
+IMAGE_HEIGHT=240
 
 #------ FINESTRE -----------
 mainGui="Immagine acquisita"
@@ -23,7 +23,10 @@ settingWindow="Imposta soglia"
 blurWindow="Immagine con filtro Blur"
 
 #------ IMPOSTAZIONI ELABORAZIONE ----------
-enableElab=False
+enableElab=0
+#------ IMPOSTAZIONI MOTORI ----------
+enableMotor=0
+
 #------ IMPOSTAZIONI GPIO --------
 io.setmode(io.BCM)
 
@@ -84,6 +87,7 @@ def createSlider():
 	cv2.createTrackbar("S-max",settingWindow, S_MAX, 256,onTrackbarSlide)
 	cv2.createTrackbar("V-max",settingWindow, V_MAX, 256,onTrackbarSlide)
 	cv2.createTrackbar("Motori I/O",settingWindow,0,1,onTrackbarSlide)
+	cv2.createTrackbar("Elaborazione I/O",settingWindow,0,1,onTrackbarSlide)
 	
 
 
@@ -95,7 +99,7 @@ q.start(0)
 q.ChangeDutyCycle(0)
 
 
-enableMotor=0 #variabile per abilitare i motori
+
 
 target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
 delta_t=250 #intervallo di tempo prima di passare al frame successivo
@@ -117,9 +121,10 @@ rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(8,8))
 
 #loop principale del programma
 while True:
-	time.sleep(1) #dopo un movimento aspetto un secondo per fissare l'immagine
+	#time.sleep(1) #dopo un movimento aspetto un secondo per fissare l'immagine
 	#definisco la variabile per i frame catturati
 	capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
+	capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, IMAGE_HEIGHT)
 
 	_,cameraFeed = capture.read()
 	cameraFeed = cv2.flip(cameraFeed,1)
@@ -134,6 +139,11 @@ while True:
 	maxColor=np.array((cv2.getTrackbarPos("H-max",settingWindow),cv2.getTrackbarPos("S-max",settingWindow),cv2.getTrackbarPos("V-max",settingWindow)))
 	thresholded=cv2.inRange(hsvFrame,minColor, maxColor);
 	
+	#Verifico se attivare il motore
+	enableMotor=cv2.getTrackbarPos("Motori I/O",settingWindow)
+	
+	#Verifico se attivare l elaborazione immagine
+	enableElab=cv2.getTrackbarPos("Elaborazione I/O",settingWindow)	
 	#applico erosione e dilatazione 
 	if enableElab:
 		cv2.erode(thresholded, thresholded,rectErosione)
@@ -144,8 +154,7 @@ while True:
 		cv2.dilate(thresholded, thresholded, rectDilataz)
 		cv2.dilate(thresholded, thresholded, rectDilataz)
 	
-	#Verifico se attivare il motore
-	enableMotor=cv2.getTrackbarPos("Motori I/O",settingWindow)
+
 	
 	#applico Hough
 	circles = cv2.HoughCircles(thresholded, cv2.cv.CV_HOUGH_GRADIENT, dp=2, minDist=120, param1=100, param2=40, minRadius=10, maxRadius=60)
