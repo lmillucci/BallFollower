@@ -219,4 +219,6 @@ while True:
 p.stop()
 q.stop()
 io.cleanup()
+cv2.destroyAllWindows()
+cv2.VideoCapture(0).release()
 	
