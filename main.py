@@ -22,8 +22,8 @@ thresholdWindow="Immagine rilevata"
 settingWindow="Imposta soglia"
 blurWindow="Immagine con filtro Blur"
 
-#------ IMPOSTAZIONI ELABORAZIONE ----------
-enableElab=0
+#------ IMPOSTAZIONI Finestra ----------
+enableFrame=0
 #------ IMPOSTAZIONI MOTORI ----------
 enableMotor=0
 
@@ -87,6 +87,7 @@ def createSlider():
 	cv2.createTrackbar("S-max",settingWindow, S_MAX, 256,onTrackbarSlide)
 	cv2.createTrackbar("V-max",settingWindow, V_MAX, 256,onTrackbarSlide)
 	cv2.createTrackbar("Motori I/O",settingWindow,0,1,onTrackbarSlide)
+	cv2.createTrackbar("Aggiornamento FRAME",settingWindow,0,1,onTrackbarSlide)
 	
 	
 
@@ -139,7 +140,8 @@ while True:
 	#Verifico se attivare il motore
 	enableMotor=cv2.getTrackbarPos("Motori I/O",settingWindow)
 	
-	
+	#Verifico se attivare i frame
+	enableFrame=cv2.getTrackbarPos("Aggiornamento FRAME", settingWindow)
 
 	
 	#applico Hough
@@ -194,11 +196,13 @@ while True:
 				changeSpeed(80,80)
 				#antiorario()
 				#counter_clockwise()
-			
-	#visualizzo le immagini 
-	cv2.imshow(mainGui,cameraFeed) #immagine acquisita
-	#cv2.imshow(hsvWindow, hsvFrame) #immagine con colori HSV
-	cv2.imshow(thresholdWindow,thresholded) #immagine Threshold
+	
+	if enableFrame==0:
+		#visualizzo le immagini 
+		cv2.imshow(mainGui,cameraFeed) #immagine acquisita
+		#cv2.imshow(hsvWindow, hsvFrame) #immagine con colori HSV
+		cv2.imshow(thresholdWindow,thresholded) #immagine Threshold
+
 	
 	#aspetto per un delta_t se l'utente preme ESC per uscire
 	if cv2.waitKey(delta_t)==27:
