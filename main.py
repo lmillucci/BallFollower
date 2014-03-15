@@ -12,8 +12,8 @@ H_MAX = 256
 S_MAX = 256
 V_MAX = 256
 
-IMAGE_WIDTH=320
-IMAGE_HEIGHT=240
+IMAGE_WIDTH=160
+IMAGE_HEIGHT=120
 
 #------ FINESTRE -----------
 mainGui="Immagine acquisita"
@@ -87,7 +87,7 @@ def createSlider():
 	cv2.createTrackbar("S-max",settingWindow, S_MAX, 256,onTrackbarSlide)
 	cv2.createTrackbar("V-max",settingWindow, V_MAX, 256,onTrackbarSlide)
 	cv2.createTrackbar("Motori I/O",settingWindow,0,1,onTrackbarSlide)
-	cv2.createTrackbar("Elaborazione I/O",settingWindow,0,1,onTrackbarSlide)
+	
 	
 
 
@@ -102,7 +102,7 @@ q.ChangeDutyCycle(0)
 
 
 target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
-delta_t=250 #intervallo di tempo prima di passare al frame successivo
+delta_t=125 #intervallo di tempo prima di passare al frame successivo
 
 cv2.namedWindow(mainGui,1)
 #imposto la sorgente per l'acquisizione
@@ -113,9 +113,6 @@ capture = cv2.VideoCapture(0);
 width,height = capture.get(3),capture.get(4)
 
 createSlider()
-
-rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(3,3))
-rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(8,8))
 
 
 
@@ -142,17 +139,6 @@ while True:
 	#Verifico se attivare il motore
 	enableMotor=cv2.getTrackbarPos("Motori I/O",settingWindow)
 	
-	#Verifico se attivare l elaborazione immagine
-	enableElab=cv2.getTrackbarPos("Elaborazione I/O",settingWindow)	
-	#applico erosione e dilatazione 
-	if enableElab:
-		cv2.erode(thresholded, thresholded,rectErosione)
-		cv2.erode(thresholded, thresholded,rectErosione)
-		cv2.erode(thresholded, thresholded,rectErosione)
-		
-		cv2.dilate(thresholded, thresholded, rectDilataz)
-		cv2.dilate(thresholded, thresholded, rectDilataz)
-		cv2.dilate(thresholded, thresholded, rectDilataz)
 	
 
 	
@@ -218,14 +204,17 @@ while True:
 	if cv2.waitKey(delta_t)==27:
 		break
 		
+	#alla fine del circlo fermo i motori
+	changeSpeed(0,0)
+	
 	if enableMotor:
 		#Se attivo enableMotor abbasso il numero di FPS	acquisiti
 		delta_t=375
+		time.sleep(0.500) # aspetto un secondo per far stabilizzare l'immagine 
 	else:
-		delta_t=250
+		delta_t=200
 		
-	#alla fine del circlo fermo i motori
-	changeSpeed(0,0)
+
 	
 p.stop()
 q.stop()
