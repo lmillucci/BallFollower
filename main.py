@@ -115,14 +115,14 @@ width,height = capture.get(3),capture.get(4)
 
 createSlider()
 
-
+capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
+capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, IMAGE_HEIGHT)
 
 #loop principale del programma
 while True:
 	#time.sleep(1) #dopo un movimento aspetto un secondo per fissare l'immagine
 	#definisco la variabile per i frame catturati
-	capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
-	capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, IMAGE_HEIGHT)
+
 
 	_,cameraFeed = capture.read()
 	cameraFeed = cv2.flip(cameraFeed,1)
