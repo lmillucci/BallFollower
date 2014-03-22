@@ -57,22 +57,25 @@ def changeSpeed(value1, value2 ):
 	p.ChangeDutyCycle(value1)
 	q.ChangeDutyCycle(value2)
 
- #motore 1
-def clockwise():
+#motore 1
+def motor1Orario():
     io.output(in1_pin, True)    
     io.output(in2_pin, False)
  
-def counter_clockwise():
+def motor1AntiOrario():
     io.output(in1_pin, False)
     io.output(in2_pin, True)
 #motore 2
-def orario():
+def motor2Orario():
 	io.output(in3_pin,True)
 	io.output(in4_pin,False)
 	
-def antiorario():
+def motor2AntiOrario():
 	io.output(in3_pin,False)
 	io.output(in4_pin,True)
+
+
+
 
 
 def createSlider():
@@ -171,8 +174,8 @@ while True:
 		print "Le coordinate del centro sono: ("+ str(x) +"," + str(y)+")"
 		if enableMotor:
 			
-			e = x-target #variabile errore >0 oggetto a dx
-										#<0 oggetto a sx
+			e = (int)(x)-target #variabile errore >0 oggetto a dx
+									#<0 oggetto a sx
 			Kp=100
 			u = int(Kp * (abs(e)/(target *1.0)))
 
@@ -180,22 +183,28 @@ while True:
 			print "Valocita = "+str(u)+ " errore = "+str(e)+ " abs = "+str(abs(e)/(target*1.0))
 			
 			#decido la direzione da prendere. Uso +-10 e non 0 per avere un minimo di tolleranza
-			if e < -10:
+			if e < -40:
 				#giro a dx
 				print "giro sx"
-				clockwise()
-				antiorario()
-			elif e > 10:
+				motor1AntiOrario()
+				motor2AntiOrario()
+
+			elif e > 40:
 				#giro a dx
 				print "giro dx"
-				counter_clockwise()
-				orario()
+				motor1Orario()
+				motor2Orario()
+
+
 			else:
 				#vado avanti
 				print "vado avanti"
 				changeSpeed(80,80)
-				#antiorario()
-				#counter_clockwise()
+				motor2Orario()
+				motor1AntiOrario()
+				#motor1AntiOrario()
+				#motor2AntiOrario()
+			
 	
 	if enableFrame==0:
 		#visualizzo le immagini 
