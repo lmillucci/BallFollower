@@ -176,7 +176,7 @@ while True:
 			
 			e = (int)(x)-target #variabile errore >0 oggetto a dx
 									#<0 oggetto a sx
-			Kp=100
+			Kp=75
 			u = int(Kp * (abs(e)/(target *1.0)))
 
 			changeSpeed(u,u)
