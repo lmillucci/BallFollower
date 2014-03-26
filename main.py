@@ -182,11 +182,11 @@ while True:
 			Kp=75.0 #Metto .0 affinche vengano trattati come decimali
 			Ki=0.0
 			Kd=0.0
-			E=(E+e)*delta_t
-			e_dot=(e-old_e)/delta_t
+			E=(E+e)*(delta_t/1000)
+			e_dot=(e-old_e)/(delta_t/1000)
 			old_e=e
-			Up = int(Kp * (abs(e)/(target *1.0)))
-			Ui = Kp * E
+			Up = Kp * (e/(target *1.0))
+			Ui = Ki * E
 			Ud = Kd * e_dot
 			
 			u = int(Up + Ud + Ui)
