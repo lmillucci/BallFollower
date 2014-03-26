@@ -102,7 +102,9 @@ p.ChangeDutyCycle(0)
 q.start(0)
 q.ChangeDutyCycle(0)
 
-
+#------- VARIABILI APPOGGIO PID -----
+E=0
+old_e=0
 
 
 target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
@@ -176,8 +178,18 @@ while True:
 			
 			e = (int)(x)-target #variabile errore >0 oggetto a dx
 									#<0 oggetto a sx
-			Kp=75
-			u = int(Kp * (abs(e)/(target *1.0)))
+			
+			Kp=75.0 #Metto .0 affinche vengano trattati come decimali
+			Ki=0.0
+			Kd=0.0
+			E=(E+e)*delta_t
+			e_dot=(e-old_e)/delta_t
+			old_e=e
+			Up = int(Kp * (abs(e)/(target *1.0)))
+			Ui = Kp * E
+			Ud = Kd * e_dot
+			
+			u = int(Up + Ud + Ui)
 
 			changeSpeed(u,u)
 			print "Valocita = "+str(u)+ " errore = "+str(e)+ " abs = "+str(abs(e)/(target*1.0))
