@@ -51,6 +51,8 @@ GPIO.setup(in4_pin, GPIO.OUT)
 PWM.start(pwm1_pin, 0, 500, 1)
 PWM.start(pwm2_pin,0,500,1)
 
+
+
 def onTrackbarSlide(*args):
     pass
 
@@ -99,6 +101,10 @@ def createSlider():
 
 
 # ------- MAIN -------------
+
+#------- VARIABILI APPOGGIO PID -----
+E=0
+old_e=0
 
 target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
 delta_t=125 #intervallo di tempo prima di passare al frame successivo
@@ -171,8 +177,17 @@ while True:
 			
 			e = (int)(x)-target #variabile errore >0 oggetto a dx
 									#<0 oggetto a sx
-			Kp=75
-			u = int(Kp * (abs(e)/(target *1.0)))
+			Kp=0.75 #Metto .0 affinche vengano trattati come decimali
+			Ki=0.0
+			Kd=0.0
+			E=(E+e)*(delta_t/1000)
+			e_dot=(e-old_e)/(delta_t/1000)
+			old_e=e
+			Up = Kp * e
+			Ui = Ki * E
+			Ud = Kd * e_dot
+			
+			u = int(abs(Up + Ud + Ui))
 
 			changeSpeed(u,u)
 			print "Valocita = "+str(u)+ " errore = "+str(e)+ " abs = "+str(abs(e)/(target*1.0))
