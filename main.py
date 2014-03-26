@@ -179,17 +179,17 @@ while True:
 			e = (int)(x)-target #variabile errore >0 oggetto a dx
 									#<0 oggetto a sx
 			
-			Kp=75.0 #Metto .0 affinche vengano trattati come decimali
+			Kp=0.75 #Metto .0 affinche vengano trattati come decimali
 			Ki=0.0
 			Kd=0.0
 			E=(E+e)*(delta_t/1000)
 			e_dot=(e-old_e)/(delta_t/1000)
 			old_e=e
-			Up = Kp * (e/(target *1.0))
+			Up = Kp * e
 			Ui = Ki * E
 			Ud = Kd * e_dot
 			
-			u = int(Up + Ud + Ui)
+			u = int(abs(Up + Ud + Ui))
 
 			changeSpeed(u,u)
 			print "Valocita = "+str(u)+ " errore = "+str(e)+ " abs = "+str(abs(e)/(target*1.0))
