@@ -170,7 +170,21 @@ while True:
 	else:
 		delta_t=200
 
-
+saveValue()
 cv2.destroyAllWindows()
 cv2.VideoCapture(0).release()
 motor.onClose()
+
+
+def saveValue():
+	hmin=cv2.getTrackbarPos("H-min",settingWindow)
+	smin=cv2.getTrackbarPos("S-min",settingWindow)
+	vmin=cv2.getTrackbarPos("V-min",settingWindow)
+	hmax=cv2.getTrackbarPos("H-max",settingWindow)
+	smax=cv2.getTrackbarPos("S-max",settingWindow)
+	vmax=cv2.getTrackbarPos("V-max",settingWindow)
+	saveData=str(hmin)+";"+str(smin)+";"+str(vmin)+";"+str(hmax)+";"+str(smax)+";"+str(vmax)
+	out_file = open("parametri.txt","w")
+	out_file.write(saveData)
+	out_file.close()
+	
