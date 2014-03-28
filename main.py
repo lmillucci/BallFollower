@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import numpy as np
 import cv2
-import RPi.GPIO as io
 import time
+from raspberry import Raspberry
 
 #------ VALORI PREDEFINITI --------
 H_MIN = 26
@@ -12,8 +12,8 @@ H_MAX = 256
 S_MAX = 256
 V_MAX = 256
 
-IMAGE_WIDTH=160
-IMAGE_HEIGHT=120
+IMAGE_WIDTH=320
+IMAGE_HEIGHT=240
 
 #------ FINESTRE -----------
 mainGui="Immagine acquisita"
@@ -27,56 +27,10 @@ enableFrame=0
 #------ IMPOSTAZIONI MOTORI ----------
 enableMotor=0
 
-#------ IMPOSTAZIONI GPIO --------
-io.setmode(io.BCM)
-
-io.cleanup() 
-
-in1_pin = 4
-in2_pin = 17
-pwm_pin= 23
-in3_pin = 24
-in4_pin = 25
-pwm2_pin = 22
- 
-io.setup(in1_pin, io.OUT)
-io.setup(in2_pin, io.OUT)
-io.setup(pwm_pin, io.OUT)
-io.setup(in3_pin, io.OUT)
-io.setup(in4_pin, io.OUT)
-io.setup(pwm2_pin, io.OUT)
-p=io.PWM(pwm_pin, 500)
-q=io.PWM(pwm2_pin, 500)
+motor=Raspberry()
 
 def onTrackbarSlide(*args):
-    pass
-
-
-
-def changeSpeed(value1, value2 ):
-	p.ChangeDutyCycle(value1)
-	q.ChangeDutyCycle(value2)
-
-#motore 1
-def motor1Orario():
-    io.output(in1_pin, True)    
-    io.output(in2_pin, False)
- 
-def motor1AntiOrario():
-    io.output(in1_pin, False)
-    io.output(in2_pin, True)
-#motore 2
-def motor2Orario():
-	io.output(in3_pin,True)
-	io.output(in4_pin,False)
-	
-def motor2AntiOrario():
-	io.output(in3_pin,False)
-	io.output(in4_pin,True)
-
-
-
-
+	pass
 
 def createSlider():
 	
@@ -96,15 +50,12 @@ def createSlider():
 
 
 # ------- MAIN -------------
-#inizializzo i pin gpio
-p.start(0)
-p.ChangeDutyCycle(0)
-q.start(0)
-q.ChangeDutyCycle(0)
+
 
 #------- VARIABILI APPOGGIO PID -----
 E=0
 old_e=0
+
 
 
 target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
@@ -183,39 +134,20 @@ while True:
 			Ki=0.0
 			Kd=0.0
 			E=(E+e)*(delta_t/1000)
-			e_dot=(e-old_e)/(delta_t/1000)
+			e_dot=(e-old_e)/(delta_t/1000+1)
 			old_e=e
 			Up = Kp * e
 			Ui = Ki * E
 			Ud = Kd * e_dot
 			
 			u = int(abs(Up + Ud + Ui))
-
-			changeSpeed(u,u)
-			print "Valocita = "+str(u)+ " errore = "+str(e)+ " abs = "+str(abs(e)/(target*1.0))
 			
-			#decido la direzione da prendere. Uso +-10 e non 0 per avere un minimo di tolleranza
-			if e < -40:
-				#giro a dx
-				print "giro sx"
-				motor1AntiOrario()
-				motor2AntiOrario()
+			if(u>100):
+				u=100
+			if(u<0):
+				u=0
 
-			elif e > 40:
-				#giro a dx
-				print "giro dx"
-				motor1Orario()
-				motor2Orario()
-
-
-			else:
-				#vado avanti
-				print "vado avanti"
-				changeSpeed(80,80)
-				motor2Orario()
-				motor1AntiOrario()
-				#motor1AntiOrario()
-				#motor2AntiOrario()
+			motor.setMotor(u,e)
 			
 	
 	if enableFrame==0:
@@ -228,22 +160,16 @@ while True:
 	#aspetto per un delta_t se l'utente preme ESC per uscire
 	if cv2.waitKey(delta_t)==27:
 		break
-		
-	#alla fine del circlo fermo i motori
-	changeSpeed(0,0)
+	
+	motor.changeSpeed(0,0)
 	
 	if enableMotor:
-		#Se attivo enableMotor abbasso il numero di FPS	acquisiti
 		delta_t=375
-		time.sleep(0.500) # aspetto un secondo per far stabilizzare l'immagine 
+		time.sleep(0.5)
 	else:
 		delta_t=200
-		
 
-	
-p.stop()
-q.stop()
-io.cleanup()
+
 cv2.destroyAllWindows()
 cv2.VideoCapture(0).release()
-	
+motor.onClose()
