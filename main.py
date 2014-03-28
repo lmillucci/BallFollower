@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import time
 from raspberry import Raspberry
-from beaglebone import BeagleBone
+#from beaglebone import BeagleBone
 
 #------ VALORI PREDEFINITI --------
 H_MIN = 26
