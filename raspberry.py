@@ -44,11 +44,12 @@ class Raspberry:
 		io.output(in3_pin,False)
 		io.output(in4_pin,True)
 
-	#inizializzo i pin gpio
-	p.start(0)
-	p.ChangeDutyCycle(0)
-	q.start(0)
-	q.ChangeDutyCycle(0)
+	def __init__(self):
+		#inizializzo i pin gpio
+		p.start(0)
+		p.ChangeDutyCycle(0)
+		q.start(0)
+		q.ChangeDutyCycle(0)
 
 
 	def setMotor(self,u,e):
