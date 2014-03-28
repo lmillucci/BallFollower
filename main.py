@@ -44,7 +44,20 @@ def saveValue():
 	out_file = open("parametri.txt","w")
 	out_file.write(saveData)
 	out_file.close()
-
+	
+def loadValue():
+	in_file = open("parametri.txt","r")
+	text=in_file.read()
+	in_file.close()
+	s=text.split(";")
+	H_MIN=s[0]
+	S_MIN=s[1]
+	V_MIN=s[2]
+	H_MAX=s[3]
+	S_MAX=s[4]
+	V_MAX=s[5]
+	print str(s)
+	
 def createSlider():
 	
 	cv2.namedWindow(settingWindow,1);
@@ -81,6 +94,8 @@ cv2.namedWindow(mainGui,1)
 capture = cv2.VideoCapture(0);
 
 width,height = capture.get(3),capture.get(4)
+
+loadValue()
 
 createSlider()
 
