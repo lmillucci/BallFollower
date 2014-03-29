@@ -186,7 +186,8 @@ while True:
 
 	
 	#aspetto per un delta_t se l'utente preme ESC per uscire
-	if cv2.waitKey(delta_t)==27:
+	escKey = cv2.waitKey(delta_t)
+	if escKey==27:
 		break
 	
 	motor.changeSpeed(0,0)
