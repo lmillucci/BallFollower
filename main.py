@@ -50,13 +50,16 @@ def loadValue():
 	text=in_file.read()
 	in_file.close()
 	s=text.split(";")
-	H_MIN=s[0]
-	S_MIN=s[1]
-	V_MIN=s[2]
-	H_MAX=s[3]
-	S_MAX=s[4]
-	V_MAX=s[5]
-	print str(s)
+	try:
+		self.H_MIN=s[0]
+		self.S_MIN=s[1]
+		self.V_MIN=s[2]
+		self.H_MAX=s[3]
+		self.S_MAX=s[4]
+		self.V_MAX=s[5]
+		print str(s)
+	catch Exception:
+		print "ERRORE: impossibile caricare le impostazioni da file"
 	
 def createSlider():
 	
