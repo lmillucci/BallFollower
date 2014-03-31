@@ -2,8 +2,8 @@
 import numpy as np
 import cv2
 import time
-from raspberry import Raspberry
-#from beaglebone import BeagleBone
+#from raspberry import Raspberry
+from beaglebone import BeagleBone
 
 #------ VALORI PREDEFINITI --------
 H_MIN = 26
@@ -27,8 +27,10 @@ blurWindow="Immagine con filtro Blur"
 enableFrame=0
 #------ IMPOSTAZIONI MOTORI ----------
 enableMotor=0
+#------ USCITA
+exit=0
 
-motor=Raspberry()
+motor=BeagleBone()
 
 def onTrackbarSlide(*args):
 	pass
@@ -46,20 +48,21 @@ def saveValue():
 	out_file.close()
 	
 def loadValue():
-	in_file = open("parametri.txt","r")
-	text=in_file.read()
-	in_file.close()
-	s=text.split(";")
 	try:
-		self.H_MIN=s[0]
-		self.S_MIN=s[1]
-		self.V_MIN=s[2]
-		self.H_MAX=s[3]
-		self.S_MAX=s[4]
-		self.V_MAX=s[5]
+		in_file = open("parametri.txt","r")
+		text=in_file.read()
+		in_file.close()
+		s=text.split(";")
+		global H_MIN, S_MIN, V_MIN, H_MAX, S_MAX,V_MAX
+		H_MIN=(int)(s[0])
+		S_MIN=(int)(s[1])
+		V_MIN=(int)(s[2])
+		H_MAX=(int)(s[3])
+		S_MAX=(int)(s[4])
+		V_MAX=(int)(s[5])
 		print str(s)
-	catch Exception:
-		print "ERRORE: impossibile caricare le impostazioni da file"
+	except Exception as detail:
+		print "ERRORE: impossibile caricare le impostazioni da file",detail
 	
 def createSlider():
 	
@@ -74,6 +77,7 @@ def createSlider():
 	cv2.createTrackbar("V-max",settingWindow, V_MAX, 256,onTrackbarSlide)
 	cv2.createTrackbar("Motori I/O",settingWindow,0,1,onTrackbarSlide)
 	cv2.createTrackbar("Aggiornamento FRAME",settingWindow,0,1,onTrackbarSlide)
+	cv2.createTrackbar("EXIT",settingWindow,0,1,onTrackbarSlide)
 	
 	
 
@@ -88,7 +92,7 @@ old_e=0
 
 
 target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
-delta_t=125 #intervallo di tempo prima di passare al frame successivo
+delta_t=75 #intervallo di tempo prima di passare al frame successivo
 
 cv2.namedWindow(mainGui,1)
 #imposto la sorgente per l'acquisizione
@@ -129,6 +133,9 @@ while True:
 	
 	#Verifico se attivare i frame
 	enableFrame=cv2.getTrackbarPos("Aggiornamento FRAME", settingWindow)
+
+	#Verifico se uscire
+	exit=cv2.getTrackbarPos("EXIT",settingWindow)
 
 	
 	#applico Hough
@@ -172,6 +179,8 @@ while True:
 			Ud = Kd * e_dot
 			
 			u = int(abs(Up + Ud + Ui))
+
+			print "U= "+str(u)
 			
 			if(u>100):
 				u=100
@@ -193,13 +202,19 @@ while True:
 	if escKey==27:
 		break
 	
-	motor.changeSpeed(0,0)
+	
 	
 	if enableMotor:
-		delta_t=375
-		time.sleep(0.5)
+		delta_t=125
+		#time.sleep(0.3)
 	else:
+		
 		delta_t=200
+
+	motor.changeSpeed(0,0)
+
+	if exit:
+		break
 
 saveValue()
 cv2.destroyAllWindows()

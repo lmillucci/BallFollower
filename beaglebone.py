@@ -10,7 +10,7 @@ in3_pin = "P9_13"
 in4_pin = "P9_14"
 #------ setting 2 PWM -----------------  TO CHANGE
 pwm1_pin= "P8_13"
-pwm2_pin = "P8_19"
+pwm2_pin = "P9_21"
  
 GPIO.setup(in1_pin, GPIO.OUT)
 GPIO.setup(in2_pin, GPIO.OUT)
@@ -18,14 +18,14 @@ GPIO.setup(in3_pin, GPIO.OUT)
 GPIO.setup(in4_pin, GPIO.OUT)
 
 #PWM.start(pin,duty,frequency,polarity)
-PWM.start(pwm1_pin, 0, 500, 1)
-PWM.start(pwm2_pin,0,500,1)
+PWM.start(pwm1_pin, 0, 500, 0)
+PWM.start(pwm2_pin,0,500,0)
 
 class BeagleBone:
 
 	def changeSpeed(self,value1, value2 ):
 		PWM.set_duty_cycle(pwm1_pin,value1)
-		PWM.set_duty_cycle(pwm1_pin,value1)
+		PWM.set_duty_cycle(pwm2_pin,value2)
 
 	#motore 1
 	def motor1Orario(self):
