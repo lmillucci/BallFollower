@@ -65,9 +65,7 @@ def loadValue():
 		print "ERRORE: impossibile caricare le impostazioni da file",detail
 	
 def createSlider():
-	
 	cv2.namedWindow(settingWindow,1);
-	
 	#metodo che crea le trackbar(label, finestra, valore da cambiare, valore massimo,action listener)
 	cv2.createTrackbar("H-min",settingWindow, H_MIN, 256, onTrackbarSlide)
 	cv2.createTrackbar("S-min",settingWindow, S_MIN, 256,onTrackbarSlide)
@@ -88,7 +86,6 @@ def createSlider():
 #------- VARIABILI APPOGGIO PID -----
 E=0
 old_e=0
-
 
 
 target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
