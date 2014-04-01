@@ -23,13 +23,17 @@ thresholdWindow="Immagine rilevata"
 settingWindow="Imposta soglia"
 blurWindow="Immagine con filtro Blur"
 
-#------ IMPOSTAZIONI Finestra ----------
-enableFrame=0
-#------ IMPOSTAZIONI MOTORI ----------
-enableMotor=0
-#------ USCITA
-exit=0
+#------ PARAMETRI UTILI ----------
+enableFrame=0 #Abilita/Disabilita l'update della finestra
+enableMotor=0 #Abilita/Disabilita i motori
+target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
+delta_t=75 #intervallo di tempo prima di passare al frame successivo
+exit=0 #Permette di uscire dal programma
+#------- VARIABILI APPOGGIO PID -----
+E=0
+old_e=0
 
+#Creazione oggetto della classe
 motor=BeagleBone()
 
 def onTrackbarSlide(*args):
@@ -77,19 +81,6 @@ def createSlider():
 	cv2.createTrackbar("Aggiornamento FRAME",settingWindow,0,1,onTrackbarSlide)
 	cv2.createTrackbar("EXIT",settingWindow,0,1,onTrackbarSlide)
 	
-	
-
-
-# ------- MAIN -------------
-
-
-#------- VARIABILI APPOGGIO PID -----
-E=0
-old_e=0
-
-
-target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
-delta_t=75 #intervallo di tempo prima di passare al frame successivo
 
 cv2.namedWindow(mainGui,1)
 #imposto la sorgente per l'acquisizione
@@ -108,14 +99,9 @@ capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, IMAGE_HEIGHT)
 
 #loop principale del programma
 while True:
-	#time.sleep(1) #dopo un movimento aspetto un secondo per fissare l'immagine
 	#definisco la variabile per i frame catturati
-
-
 	_,cameraFeed = capture.read()
 	cameraFeed = cv2.flip(cameraFeed,1)
-
-		
 
 	#variabile su cui salvo l'immagine HSV
 	hsvFrame = cv2.cvtColor(cameraFeed,cv2.COLOR_BGR2HSV)
@@ -133,7 +119,6 @@ while True:
 
 	#Verifico se uscire
 	exit=cv2.getTrackbarPos("EXIT",settingWindow)
-
 	
 	#applico Hough
 	circles = cv2.HoughCircles(thresholded, cv2.cv.CV_HOUGH_GRADIENT, dp=2, minDist=120, param1=100, param2=40, minRadius=10, maxRadius=60)
@@ -185,7 +170,9 @@ while True:
 				u=0
 
 			motor.setMotor(u,e)
-			
+	else:
+		#se non ho trovato nessuna pallina mi fermo
+		motor.changeSpeed(0,0)
 	
 	if enableFrame==0:
 		#visualizzo le immagini 
@@ -193,22 +180,17 @@ while True:
 		#cv2.imshow(hsvWindow, hsvFrame) #immagine con colori HSV
 		cv2.imshow(thresholdWindow,thresholded) #immagine Threshold
 
-	
 	#aspetto per un delta_t se l'utente preme ESC per uscire
 	escKey = cv2.waitKey(delta_t)
 	if escKey==27:
 		break
 	
-	
-	
 	if enableMotor:
 		delta_t=125
-		#time.sleep(0.3)
 	else:
-		
 		delta_t=200
 
-	motor.changeSpeed(0,0)
+	#motor.changeSpeed(0,0)
 
 	if exit:
 		break
@@ -217,7 +199,3 @@ saveValue()
 cv2.destroyAllWindows()
 cv2.VideoCapture(0).release()
 motor.onClose()
-
-
-
-	
