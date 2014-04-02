@@ -28,7 +28,7 @@ enableFrame=0 #Abilita/Disabilita l'update della finestra
 enableMotor=0 #Abilita/Disabilita i motori
 target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
 delta_t=75 #intervallo di tempo prima di passare al frame successivo
-exit=0 #Permette di uscire dal programma
+exit=0 #Permette di uscire dal programma salvando i dati
 #------- VARIABILI APPOGGIO PID -----
 E=0
 old_e=0
@@ -88,7 +88,7 @@ cv2.namedWindow(mainGui,1)
 # 1 -> cam esterna
 capture = cv2.VideoCapture(0);
 
-width,height = capture.get(3),capture.get(4)
+#width,height = capture.get(3),capture.get(4)
 
 loadValue()
 
