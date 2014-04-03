@@ -1,4 +1,4 @@
 BallFollower
 ============
 
-The main goal of this project is follow a tennis ball with a simple robot controlled by Raspberry Pi or BeagleBone Black
+The main goal of this project is recognise using a webcam and openCV library a tennis ball and then follow it. This project is realized using BegleBoneBlack or Raspberry Pi. 
