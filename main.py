@@ -184,11 +184,12 @@ while True:
 	escKey = cv2.waitKey(delta_t)
 	if escKey==27:
 		break
-	
+	#Questo if else ha senso solo su Raspberry
+	#la BBB non ha problemi di frame rate
 	if enableMotor:
 		delta_t=125
 	else:
-		delta_t=200
+		delta_t=125 
 
 	#motor.changeSpeed(0,0)
 
