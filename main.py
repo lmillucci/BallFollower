@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import time
 #from raspberry import Raspberry
-from beaglebone import BeagleBone
+#from beaglebone import BeagleBone
 
 #------ VALORI PREDEFINITI --------
 H_MIN = 26
@@ -13,8 +13,8 @@ H_MAX = 256
 S_MAX = 256
 V_MAX = 256
 
-IMAGE_WIDTH=320
-IMAGE_HEIGHT=240
+IMAGE_WIDTH=640
+IMAGE_HEIGHT=480
 
 #------ FINESTRE -----------
 mainGui="Immagine acquisita"
@@ -30,8 +30,9 @@ target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
 delta_t=75 #intervallo di tempo prima di passare al frame successivo
 exit=0 #Permette di uscire dal programma salvando i dati
 #------- VARIABILI APPOGGIO PID -----
-E=0
-old_e=0
+#E=0
+#old_e=0
+ball_state = 0
 
 #Creazione oggetto della classe
 motor=BeagleBone()
@@ -88,7 +89,6 @@ cv2.namedWindow(mainGui,1)
 # 1 -> cam esterna
 capture = cv2.VideoCapture(0);
 
-#width,height = capture.get(3),capture.get(4)
 
 loadValue()
 
@@ -121,7 +121,7 @@ while True:
 	exit=cv2.getTrackbarPos("EXIT",settingWindow)
 	
 	#applico Hough
-	circles = cv2.HoughCircles(thresholded, cv2.cv.CV_HOUGH_GRADIENT, dp=2, minDist=120, param1=100, param2=40, minRadius=10, maxRadius=60)
+	circles = cv2.HoughCircles(thresholded, cv2.cv.CV_HOUGH_GRADIENT, dp=2, minDist=60, param1=100, param2=40, minRadius=5, maxRadius=60)
 	
 	#ATTENZIONE circles e una matrice 1xnx3
 	#print circles
@@ -133,15 +133,19 @@ while True:
 		
 		for i in range(circles.size/3):
 			circle=circles[0,i]
+			cv2.circle(cameraFeed, (circle[0],circle[1]), circle[2], (255,0,0),2)
 			if circle[2]>maxRadius:
-				found=True
 				radius=int(circle[2])
 				maxRadius=int(radius)
 				x=int(circle[0])
 				y=int(circle[1])
+		found=True
+		ball_state+=1
+	else:
+		ball_state=0
 			
 			
-	if found:
+	if (found and (ball_state>=2)):
 		#cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
 		cv2.circle(cameraFeed, (x,y), maxRadius, (0,255,0),2)
 		print "Le coordinate del centro sono: ("+ str(x) +"," + str(y)+")"
@@ -153,14 +157,15 @@ while True:
 			Kp=0.31 #Metto .0 affinche vengano trattati come decimali
 			Ki=0.0
 			Kd=0.0
-			E=(E+e)*(delta_t/1000.0)
-			e_dot=(e-old_e)/(delta_t/1000.0)
-			old_e=e
+			#E=(E+e)*(delta_t/1000.0)
+			#e_dot=(e-old_e)/(delta_t/1000.0)
+			#old_e=e
 			Up = Kp * e
-			Ui = Ki * E
-			Ud = Kd * e_dot
+			#Ui = Ki * E
+			#Ud = Kd * e_dot
 			
-			u = int(abs(Up + Ud + Ui))
+			#u = int(abs(Up + Ud + Ui))
+			u = int(abs(Up))
 
 			print "U= "+str(u)
 			
