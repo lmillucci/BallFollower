@@ -164,12 +164,12 @@ while True:
 
 			print "U= "+str(u)
 			
-			if(u>100):
-				u=100
+			if(1<u<20):
+				u=20
 			elif(u<0):
 				u=0
-			elif(1<u<20):
-				u=20
+			elif(u>100):
+				u=100
 
 			motor.setMotor(u,e)
 	else:
