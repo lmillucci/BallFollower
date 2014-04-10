@@ -150,11 +150,11 @@ while True:
 			e = (int)(x)-target #variabile errore >0 oggetto a dx
 									#<0 oggetto a sx
 			
-			Kp=0.75 #Metto .0 affinche vengano trattati come decimali
+			Kp=0.31 #Metto .0 affinche vengano trattati come decimali
 			Ki=0.0
 			Kd=0.0
-			E=(E+e)*(delta_t/1000)
-			e_dot=(e-old_e)/(delta_t/1000+1)
+			E=(E+e)*(delta_t/1000.0)
+			e_dot=(e-old_e)/(delta_t/1000.0)
 			old_e=e
 			Up = Kp * e
 			Ui = Ki * E
@@ -166,8 +166,10 @@ while True:
 			
 			if(u>100):
 				u=100
-			if(u<0):
+			elif(u<0):
 				u=0
+			elif(1<u<20):
+				u=20
 
 			motor.setMotor(u,e)
 	else:
@@ -187,9 +189,9 @@ while True:
 	#Questo if else ha senso solo su Raspberry
 	#la BBB non ha problemi di frame rate
 	if enableMotor:
-		delta_t=125
+		delta_t=100
 	else:
-		delta_t=125 
+		delta_t=100
 
 	#motor.changeSpeed(0,0)
 
