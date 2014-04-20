@@ -102,9 +102,13 @@ while True:
 	#definisco la variabile per i frame catturati
 	_,cameraFeed = capture.read()
 	cameraFeed = cv2.flip(cameraFeed,1)
+	
+	#creo un immagine temporanea per poter applicare il median blur
+	tmp = cv2.medianBlur(cameraFeed, 5)
+	
 
 	#variabile su cui salvo l'immagine HSV
-	hsvFrame = cv2.cvtColor(cameraFeed,cv2.COLOR_BGR2HSV)
+	hsvFrame = cv2.cvtColor(tmp,cv2.COLOR_BGR2HSV)
 
 	#filtro hsvFrame cercando solo un determinato range di colori
 	minColor=np.array((cv2.getTrackbarPos("H-min",settingWindow),cv2.getTrackbarPos("S-min",settingWindow),cv2.getTrackbarPos("V-min",settingWindow)))
