@@ -4,6 +4,7 @@ import cv2
 import time
 #from raspberry import Raspberry
 #from beaglebone import BeagleBone
+#from arduinoServer import Arduino
 
 #------ VALORI PREDEFINITI --------
 H_MIN = 26
