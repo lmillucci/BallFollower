@@ -29,4 +29,12 @@ class Arduino:
 		
 		direction += str(u)+ self.ENDING 
 		print direction
-		#ser.write(direction)
+		#self.ser.write(direction)
+	
+	def changeSpeed(self, value_left, value_right):
+		#TO-DO --> called by 187 in main
+		pass
+	
+	def onClose(self):
+		#TO-DO
+		pass
