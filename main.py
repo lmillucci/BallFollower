@@ -4,7 +4,7 @@ import cv2
 import time
 #from raspberry import Raspberry
 #from beaglebone import BeagleBone
-#from arduinoServer import Arduino
+#from arduino import Arduino
 
 #------ VALORI PREDEFINITI --------
 H_MIN = 26
@@ -36,7 +36,7 @@ exit=0 #Permette di uscire dal programma salvando i dati
 ball_state = 0
 
 #Creazione oggetto della classe
-motor=BeagleBone()
+#motor=BeagleBone()
 
 def onTrackbarSlide(*args):
 	pass
@@ -138,7 +138,7 @@ while True:
 		
 		for i in range(circles.size/3):
 			circle=circles[0,i]
-			cv2.circle(cameraFeed, (circle[0],circle[1]), circle[2], (255,0,0),2)
+			cv2.circle(hsvFrame, (circle[0],circle[1]), circle[2], (255,0,0),2)
 			if circle[2]>maxRadius:
 				radius=int(circle[2])
 				maxRadius=int(radius)
@@ -152,7 +152,7 @@ while True:
 			
 	if (found and (ball_state>=2)):
 		#cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
-		cv2.circle(cameraFeed, (x,y), maxRadius, (0,255,0),2)
+		cv2.circle(hsvFrame, (x,y), maxRadius, (0,255,0),2)
 		print "Le coordinate del centro sono: ("+ str(x) +"," + str(y)+")"
 		if enableMotor:
 			
@@ -184,12 +184,13 @@ while True:
 			motor.setMotor(u,e)
 	else:
 		#se non ho trovato nessuna pallina mi fermo
-		motor.changeSpeed(0,0)
+		#motor.changeSpeed(0,0)
+		pass
 	
 	if enableFrame==0:
 		#visualizzo le immagini 
-		cv2.imshow(mainGui,cameraFeed) #immagine acquisita
-		#cv2.imshow(hsvWindow, hsvFrame) #immagine con colori HSV
+		#cv2.imshow(mainGui,cameraFeed) #immagine acquisita
+		cv2.imshow(hsvWindow, hsvFrame) #immagine con colori HSV
 		cv2.imshow(thresholdWindow,thresholded) #immagine Threshold
 
 	#aspetto per un delta_t se l'utente preme ESC per uscire
@@ -211,4 +212,4 @@ while True:
 saveValue()
 cv2.destroyAllWindows()
 cv2.VideoCapture(0).release()
-motor.onClose()
+#motor.onClose()
