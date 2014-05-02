@@ -1,36 +1,52 @@
 #installing pySerial is required 
 import serial 
-#TO-DO
+import time
 
 ser = ""
+ENDING = "\n"
+
 
 class Arduino:
-  
-    def __init__(self):
-      ser = serial.Serial('/dev/tty.usbserial', 9600)
-  
-  	def changeSpeed(self,value1, value2 ):
-  	  pass
-
-    #motore 1
+    def changeSpeed(self,value1, value2 ):
+    	pass
+    	
     def motor1Orario(self):
-      pass
+    	pass
+	def motor1AntiOrario(self):
+		pass
+	def motor2Orario(self):
+		pass
+	def motor2AntiOrario(self):
+		pass
+	def onClose(self):
+		pass
+	def setMotor(self,u,e):
+		direction = ""
+		if e < -40:
+			#giro a dx
+			print "giro sx"
+			direction ="l"
 
-    def motor1AntiOrario(self):
-      pass
-    
-    #motore 2
-    def motor2Orario(self):
-      pass
-    
-    def motor2AntiOrario(self):
-      pass
+		elif e > 40:
+			#giro a dx
+			print "giro dx"
+			direction = "r"
+
+
+		else:
+			#vado avanti
+			print "vado avanti"
+			u=75
+			direction = "f"
+		
+		direction += ENDING+ str(u)+ENDING+ str(u)+ENDING
+		print direction
+		ser.write(direction)
     
     def __init__(self):
-      pass
-    
-    def setMotor(self, u, e):
-      pass
+		global ser
+		ser = serial.Serial('/dev/ttyACM0', 9600)
+		self.onClose()
 
-    def onClose(self):
-      pass
+a = Arduino()
+#a.setMotor(50,50)
