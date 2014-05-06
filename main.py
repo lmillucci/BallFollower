@@ -170,7 +170,7 @@ while True:
 			#Ud = Kd * e_dot
 			
 			#u = int(abs(Up + Ud + Ui))
-			u = int(abs(Up))
+			u = int(abs(Up + Ui))
 
 			print "U= "+str(u)
 			
@@ -185,7 +185,6 @@ while True:
 	else:
 		#se non ho trovato nessuna pallina mi fermo
 		motor.changeSpeed(0,0)
-		#pass
 	
 	if enableFrame==0:
 		#visualizzo le immagini 
@@ -204,7 +203,6 @@ while True:
 	else:
 		delta_t=80
 
-	#motor.changeSpeed(0,0)
 
 	if exit:
 		break
