@@ -4,7 +4,7 @@ import cv2
 import time
 #from raspberry import Raspberry
 #from beaglebone import BeagleBone
-#from arduino import Arduino
+from arduino import Arduino
 
 #------ VALORI PREDEFINITI --------
 H_MIN = 26
@@ -31,12 +31,12 @@ target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
 delta_t=75 #intervallo di tempo prima di passare al frame successivo
 exit=0 #Permette di uscire dal programma salvando i dati
 #------- VARIABILI APPOGGIO PID -----
-#E=0
+E=0
 #old_e=0
 ball_state = 0
 
 #Creazione oggetto della classe
-#motor=BeagleBone()
+motor=Arduino()
 
 def onTrackbarSlide(*args):
 	pass
@@ -84,7 +84,7 @@ def createSlider():
 	cv2.createTrackbar("EXIT",settingWindow,0,1,onTrackbarSlide)
 	
 
-cv2.namedWindow(mainGui,1)
+#cv2.namedWindow(mainGui,1)
 #imposto la sorgente per l'acquisizione
 # 0 -> cam predefinita
 # 1 -> cam esterna
@@ -159,14 +159,14 @@ while True:
 			e = (int)(x)-target #variabile errore >0 oggetto a dx
 									#<0 oggetto a sx
 			
-			Kp=0.31 #Metto .0 affinche vengano trattati come decimali
-			Ki=0.0
+			Kp=0.10 #Metto .0 affinche vengano trattati come decimali
+			Ki=0.2
 			Kd=0.0
-			#E=(E+e)*(delta_t/1000.0)
+			E=(E+e)*(delta_t/1000.0)
 			#e_dot=(e-old_e)/(delta_t/1000.0)
 			#old_e=e
 			Up = Kp * e
-			#Ui = Ki * E
+			Ui = Ki * E
 			#Ud = Kd * e_dot
 			
 			#u = int(abs(Up + Ud + Ui))
@@ -174,8 +174,8 @@ while True:
 
 			print "U= "+str(u)
 			
-			if(1<u<20):
-				u=20
+			if(1<u<28):
+				u=28
 			elif(u<0):
 				u=0
 			elif(u>100):
@@ -184,8 +184,8 @@ while True:
 			motor.setMotor(u,e)
 	else:
 		#se non ho trovato nessuna pallina mi fermo
-		#motor.changeSpeed(0,0)
-		pass
+		motor.changeSpeed(0,0)
+		#pass
 	
 	if enableFrame==0:
 		#visualizzo le immagini 
@@ -200,9 +200,9 @@ while True:
 	#Questo if else ha senso solo su Raspberry
 	#la BBB non ha problemi di frame rate
 	if enableMotor:
-		delta_t=100
+		delta_t=80
 	else:
-		delta_t=100
+		delta_t=80
 
 	#motor.changeSpeed(0,0)
 

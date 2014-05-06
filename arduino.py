@@ -2,38 +2,38 @@ import time
 import serial
 
 class Arduino:
-	ser = ""
 	ENDING = "\n"
 	
 	def __init__(self):
 		self.ser = "Ciao"
-		#self.ser = serial.Serial('/dev/ttyACM0', 9600)
+		self.ser = serial.Serial('/dev/ttyACM0', 9600)
 		
 	def setMotor(self, u, e):
 		direction = ""
-		if e < -40:
+		if e < -65:
 			#turn Left
 			print "Left"
-			direction = "l" + self.ENDING
+			direction = "4" + self.ENDING
 
-		elif e > 40:
+		elif e > 65:
 			#turn right
 			print "Right"
-			direction = "r" + self.ENDING
+			direction = "6" + self.ENDING
 
 		else:
 			#go Forward
 			print "Forward"
 			u=75
-			direction = "f" + self.ENDING
+			direction = "8" + self.ENDING
 		
-		direction += str(u)+ self.ENDING 
+		direction += str(u) + "\n"
 		print direction
-		#self.ser.write(direction)
+		self.ser.write(direction)
 	
 	def changeSpeed(self, value_left, value_right):
-		#TO-DO --> called by 187 in main
-		pass
+		direction="8" + self.ENDING + "0" + "\n"
+		print direction
+		self.ser.write(direction)
 	
 	def onClose(self):
 		#TO-DO
