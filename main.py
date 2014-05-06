@@ -163,8 +163,8 @@ while True:
 			
 			#graph.updateVal(e) #update graph
 			
-			Kp=0.20 #Metto .0 affinche vengano trattati come decimali
-			Ki=0.20
+			Kp=0.76 #Metto .0 affinche vengano trattati come decimali
+			Ki=0.03
 			Kd=0.0
 			E=(E+e)*(delta_t/1000.0)
 			#e_dot=(e-old_e)/(delta_t/1000.0)
