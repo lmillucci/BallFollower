@@ -159,8 +159,8 @@ while True:
 			e = (int)(x)-target #variabile errore >0 oggetto a dx
 									#<0 oggetto a sx
 			
-			Kp=0.10 #Metto .0 affinche vengano trattati come decimali
-			Ki=0.2
+			Kp=0.20 #Metto .0 affinche vengano trattati come decimali
+			Ki=0.20
 			Kd=0.0
 			E=(E+e)*(delta_t/1000.0)
 			#e_dot=(e-old_e)/(delta_t/1000.0)
@@ -174,8 +174,8 @@ while True:
 
 			print "U= "+str(u)
 			
-			if(1<u<28):
-				u=28
+			if(1<u<20):
+				u=20
 			elif(u<0):
 				u=0
 			elif(u>100):
