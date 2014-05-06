@@ -4,7 +4,8 @@ import cv2
 import time
 #from raspberry import Raspberry
 #from beaglebone import BeagleBone
-from arduino import Arduino
+#from arduino import Arduino
+from graph import Graph
 
 #------ VALORI PREDEFINITI --------
 H_MIN = 26
@@ -36,7 +37,8 @@ E=0
 ball_state = 0
 
 #Creazione oggetto della classe
-motor=Arduino()
+#motor=Arduino()
+graph = Graph()
 
 def onTrackbarSlide(*args):
 	pass
@@ -159,6 +161,8 @@ while True:
 			e = (int)(x)-target #variabile errore >0 oggetto a dx
 									#<0 oggetto a sx
 			
+			#graph.updateVal(e) #update graph
+			
 			Kp=0.20 #Metto .0 affinche vengano trattati come decimali
 			Ki=0.20
 			Kd=0.0
@@ -181,10 +185,11 @@ while True:
 			elif(u>100):
 				u=100
 
-			motor.setMotor(u,e)
+			#motor.setMotor(u,e)
 	else:
 		#se non ho trovato nessuna pallina mi fermo
-		motor.changeSpeed(0,0)
+		#motor.changeSpeed(0,0)
+		pass
 	
 	if enableFrame==0:
 		#visualizzo le immagini 
