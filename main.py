@@ -31,6 +31,9 @@ enableMotor=0 #Abilita/Disabilita i motori
 target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
 delta_t=75 #intervallo di tempo prima di passare al frame successivo
 exit=0 #Permette di uscire dal programma salvando i dati
+enableElab = 0 #Abilita/Disabilita l'erosione/dilatazione
+kernel = np.ones((5,5),np.uint8) #Kernel per erodi/dilata
+
 #------- VARIABILI APPOGGIO PID -----
 E=0
 #old_e=0
@@ -70,7 +73,7 @@ def loadValue():
 		V_MAX=(int)(s[5])
 		print str(s)
 	except Exception as detail:
-		print "ERRORE: impossibile caricare le impostazioni da file",detail
+		print "ERROR: impossible load settings from file",detail
 	
 def createSlider():
 	cv2.namedWindow(settingWindow,1);
@@ -83,10 +86,13 @@ def createSlider():
 	cv2.createTrackbar("V-max",settingWindow, V_MAX, 256,onTrackbarSlide)
 	cv2.createTrackbar("Motori I/O",settingWindow,0,1,onTrackbarSlide)
 	cv2.createTrackbar("Aggiornamento FRAME",settingWindow,0,1,onTrackbarSlide)
+	cv2.createTrackbar("Erodi/dilata",settingWindow,0,1,onTrackbarSlide)
 	cv2.createTrackbar("EXIT",settingWindow,0,1,onTrackbarSlide)
 	
+	
+rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(21,21))
+rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(11,11))
 
-#cv2.namedWindow(mainGui,1)
 #imposto la sorgente per l'acquisizione
 # 0 -> cam predefinita
 # 1 -> cam esterna
@@ -108,7 +114,7 @@ while True:
 	
 	#creo un immagine temporanea per poter applicare il median blur
 	tmp = cv2.medianBlur(cameraFeed, 5)
-	
+
 
 	#variabile su cui salvo l'immagine HSV
 	hsvFrame = cv2.cvtColor(tmp,cv2.COLOR_BGR2HSV)
@@ -117,6 +123,13 @@ while True:
 	minColor=np.array((cv2.getTrackbarPos("H-min",settingWindow),cv2.getTrackbarPos("S-min",settingWindow),cv2.getTrackbarPos("V-min",settingWindow)))
 	maxColor=np.array((cv2.getTrackbarPos("H-max",settingWindow),cv2.getTrackbarPos("S-max",settingWindow),cv2.getTrackbarPos("V-max",settingWindow)))
 	thresholded=cv2.inRange(hsvFrame,minColor, maxColor);
+
+	#Verifico se attivare l elaborazione immagine
+	enableElab=cv2.getTrackbarPos("Erodi/dilata",settingWindow)	
+	#applico erosione e dilatazione 
+	if enableElab == 1:
+		thresholded = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, kernel)
+		thresholded = cv2.morphologyEx(thresholded, cv2.MORPH_CLOSE, kernel)
 	
 	#Verifico se attivare il motore
 	enableMotor=cv2.getTrackbarPos("Motori I/O",settingWindow)
@@ -191,8 +204,7 @@ while True:
 		#motor.changeSpeed(0,0)
 		pass
 	
-	if enableFrame==0:
-		#visualizzo le immagini 
+	if enableFrame==0: #visualizzo le immagini 
 		#cv2.imshow(mainGui,cameraFeed) #immagine acquisita
 		cv2.imshow(hsvWindow, hsvFrame) #immagine con colori HSV
 		cv2.imshow(thresholdWindow,thresholded) #immagine Threshold
@@ -201,8 +213,7 @@ while True:
 	escKey = cv2.waitKey(delta_t)
 	if escKey==27:
 		break
-	#Questo if else ha senso solo su Raspberry
-	#la BBB non ha problemi di frame rate
+
 	if enableMotor:
 		delta_t=80
 	else:
