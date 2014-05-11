@@ -176,6 +176,20 @@ while True:
 			
 			#graph.updateVal(e) #update graph
 			
+			'''
+			if(512<e<640):
+				u=40
+			elif(384<e<512):
+				u=30
+			elif(256<e<384):
+				u=20
+			elif(128<e<256):
+				u=30
+			elif(0<e<128):
+				u=40
+			'''
+			
+			
 			Kp=0.76 #Metto .0 affinche vengano trattati come decimali
 			Ki=0.03
 			Kd=0.0
