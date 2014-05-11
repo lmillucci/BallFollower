@@ -215,9 +215,9 @@ while True:
 		break
 
 	if enableMotor:
-		delta_t=80
+		delta_t=100
 	else:
-		delta_t=80
+		delta_t=100
 
 
 	if exit:
