@@ -190,7 +190,7 @@ while True:
 			'''
 			
 			
-			Kp=0.76 #Metto .0 affinche vengano trattati come decimali
+			Kp=0.28 #Metto .0 affinche vengano trattati come decimali
 			Ki=0.03
 			Kd=0.0
 			E=(E+e)*(delta_t/1000.0)
