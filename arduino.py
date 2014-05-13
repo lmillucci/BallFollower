@@ -29,7 +29,7 @@ class Arduino:
 					print "Left"
 					direction = "4" + self.ENDING
 		
-		direction += str(u) + "\n"
+		direction += str(self.u) + "\n"
 		print direction
 		self.ser.write(direction)
 	
