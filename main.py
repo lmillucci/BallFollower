@@ -176,43 +176,8 @@ while True:
 									#<0 oggetto a sx
 			
 			#graph.updateVal(e) #update graph
-			
-			u=0
 
-			if(160<=e<=320):
-				u=35
-			elif(80<=e<160):
-				u=25
-			elif(-80<=e<80):
-				u=75
-			elif(-160<=e<-80):
-				u=25
-			elif(-320<=e<-160):
-				u=35
-			'''
-			Kp=0.28 #Metto .0 affinche vengano trattati come decimali
-			Ki=0.03
-			Kd=0.0
-			E=(E+e)*(delta_t/1000.0)
-			#e_dot=(e-old_e)/(delta_t/1000.0)
-			#old_e=e
-			Up = Kp * e
-			Ui = Ki * E
-			#Ud = Kd * e_dot
-			
-			#u = int(abs(Up + Ud + Ui))
-			u = int(abs(Up + Ui))
-
-			print "U= "+str(u)
-			
-			if(1<u<20):
-				u=20
-			elif(u<0):
-				u=0
-			elif(u>100):
-				u=100
-			'''
-			motor.setMotor(u,e)
+			motor.setMotor(maxRadius,e)
 	else:
 		#se non ho trovato nessuna pallina mi fermo
 		motor.changeSpeed(0,0)

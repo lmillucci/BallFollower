@@ -5,26 +5,29 @@ class Arduino:
 	ENDING = "\n"
 	
 	def __init__(self):
-		self.ser = "Ciao"
+		self.u = 0
 		self.ser = serial.Serial('/dev/ttyACM0', 9600)
 		
-	def setMotor(self, u, e):
+	def setMotor(self, radius, e):
 		direction = ""
-		if e < -80:
-			#turn Left
-			print "Left"
-			direction = "4" + self.ENDING
-
-		elif e > 80:
-			#turn right
-			print "Right"
-			direction = "6" + self.ENDING
-
-		else:
-			#go Forward
+		if(2 * radius > 100):
+			self.u = 75
 			print "Forward"
-			#u=75
 			direction = "8" + self.ENDING
+		else:
+			min_range = abs(5.3 * radius)			
+			if( e < min_range and e > -min_range):
+				self.u = 75
+				print "Forward"
+				direction = "8" + self.ENDING
+			else:
+				self.u = (int)((10 / (320 - min_range)) * (abs(e) - min_range) + 20) 
+				if e > 0: 
+					print "Right"
+					direction = "6" + self.ENDING
+				if e < 0:
+					print "Left"
+					direction = "4" + self.ENDING
 		
 		direction += str(u) + "\n"
 		print direction
