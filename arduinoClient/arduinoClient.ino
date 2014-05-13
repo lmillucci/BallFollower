@@ -5,7 +5,7 @@ int j;
 
 void setup() {
     Serial.begin(9600);
-    Serial.println("Serial conection started, waiting for instructions...");
+    //Serial.println("Serial conection started, waiting for instructions...");
     
     //Setup Channel A
     pinMode(12, OUTPUT); //Initiates Motor Channel A pin
@@ -34,7 +34,7 @@ void loop() {
             // You can put some if and else here to process the message juste like that:
 
             if(inData == "+++\n"){ // DON'T forget to add "\n" at the end of the string.
-              Serial.println("OK. Press h for help.");
+              //Serial.println("OK. Press h for help.");
             }   
 
             if(i==2){
@@ -47,16 +47,17 @@ void loop() {
                 left(val[1]);
               }
               
-              Serial.print(val[0]);
+              /*Serial.print(val[0]);
               Serial.print("\n");
               Serial.print(val[1]);
               Serial.print("\n");
               Serial.print("-------");
-              Serial.print("\n");
+              Serial.print("\n");*/
 
               i=0;
             }
             inData = ""; // Clear recieved buffer
+            //delay(200);
         }
     }
 }
@@ -64,42 +65,39 @@ void loop() {
 void forward(int u){
    digitalWrite(12, LOW);  //Establishes backward direction of Channel A
    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+   digitalWrite(13, HIGH); //Establishes forward direction of Channel B
+   digitalWrite(8, LOW);   //Disengage the Brake for Channel B
    int value;
    value=(u*255)/100;
    analogWrite(3, value);
-   
-   digitalWrite(13, HIGH); //Establishes forward direction of Channel B
-   digitalWrite(8, LOW);   //Disengage the Brake for Channel B
    analogWrite(11, value); 
   
-   Serial.print(value); 
+  // Serial.print(value); 
    
 }
 
 void left(int u){
    digitalWrite(12, LOW);  //Establishes backward direction of Channel A
    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+   digitalWrite(13, LOW); //Establishes forward direction of Channel B
+   digitalWrite(8, LOW);   //Disengage the Brake for Channel B
    int value;
    value=(u*255)/100;
    analogWrite(3, value);
-   
-   digitalWrite(13, LOW); //Establishes forward direction of Channel B
-   digitalWrite(8, LOW);   //Disengage the Brake for Channel B
    analogWrite(11, value); 
    
-   Serial.print(value);
+   //Serial.print(value);
 }
 
 void right(int u){
    digitalWrite(12, HIGH);  //Establishes backward direction of Channel A
-   digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+   digitalWrite(9, LOW);   //Disengage the Brake for Channel A   digitalWrite(13, HIGH); //Establishes forward direction of Channel B
+   digitalWrite(8, LOW);   //Disengage the Brake for Channel B
    int value;
    value=(u*255)/100;
    analogWrite(3, value);
-   
-   digitalWrite(13, HIGH); //Establishes forward direction of Channel B
-   digitalWrite(8, LOW);   //Disengage the Brake for Channel B
    analogWrite(11, value); 
    
-   Serial.print(value);
+   //Serial.print(value);
+   Serial.flush();
 }
