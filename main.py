@@ -4,7 +4,7 @@ import cv2
 import time
 #from raspberry import Raspberry
 #from beaglebone import BeagleBone
-#from arduino import Arduino
+from arduino import Arduino
 from graph import Graph
 
 #------ VALORI PREDEFINITI --------
@@ -29,7 +29,7 @@ blurWindow="Immagine con filtro Blur"
 enableFrame=0 #Abilita/Disabilita l'update della finestra
 enableMotor=0 #Abilita/Disabilita i motori
 target=IMAGE_WIDTH/2 #voglio che l'oggetto stia al centro dello schermo
-delta_t=75 #intervallo di tempo prima di passare al frame successivo
+delta_t=200 #intervallo di tempo prima di passare al frame successivo
 exit=0 #Permette di uscire dal programma salvando i dati
 enableElab = 0 #Abilita/Disabilita l'erosione/dilatazione
 kernel = np.ones((5,5),np.uint8) #Kernel per erodi/dilata
@@ -40,7 +40,7 @@ E=0
 ball_state = 0
 
 #Creazione oggetto della classe
-#motor=Arduino()
+motor=Arduino()
 graph = Graph()
 
 def onTrackbarSlide(*args):
@@ -105,6 +105,7 @@ createSlider()
 
 capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
 capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, IMAGE_HEIGHT)
+capture.set(cv2.cv.CV_CAP_PROP_FPS, 5)
 
 #loop principale del programma
 while True:
@@ -176,20 +177,19 @@ while True:
 			
 			#graph.updateVal(e) #update graph
 			
+			u=0
+
+			if(160<=e<=320):
+				u=35
+			elif(80<=e<160):
+				u=25
+			elif(-80<=e<80):
+				u=75
+			elif(-160<=e<-80):
+				u=25
+			elif(-320<=e<-160):
+				u=35
 			'''
-			if(512<e<640):
-				u=40
-			elif(384<e<512):
-				u=30
-			elif(256<e<384):
-				u=20
-			elif(128<e<256):
-				u=30
-			elif(0<e<128):
-				u=40
-			'''
-			
-			
 			Kp=0.28 #Metto .0 affinche vengano trattati come decimali
 			Ki=0.03
 			Kd=0.0
@@ -211,11 +211,11 @@ while True:
 				u=0
 			elif(u>100):
 				u=100
-
-			#motor.setMotor(u,e)
+			'''
+			motor.setMotor(u,e)
 	else:
 		#se non ho trovato nessuna pallina mi fermo
-		#motor.changeSpeed(0,0)
+		motor.changeSpeed(0,0)
 		pass
 	
 	if enableFrame==0: #visualizzo le immagini 
@@ -227,13 +227,7 @@ while True:
 	escKey = cv2.waitKey(delta_t)
 	if escKey==27:
 		break
-
-	if enableMotor:
-		delta_t=100
-	else:
-		delta_t=100
-
-
+	
 	if exit:
 		break
 

@@ -10,12 +10,12 @@ class Arduino:
 		
 	def setMotor(self, u, e):
 		direction = ""
-		if e < -65:
+		if e < -80:
 			#turn Left
 			print "Left"
 			direction = "4" + self.ENDING
 
-		elif e > 65:
+		elif e > 80:
 			#turn right
 			print "Right"
 			direction = "6" + self.ENDING
@@ -23,7 +23,7 @@ class Arduino:
 		else:
 			#go Forward
 			print "Forward"
-			u=75
+			#u=75
 			direction = "8" + self.ENDING
 		
 		direction += str(u) + "\n"
