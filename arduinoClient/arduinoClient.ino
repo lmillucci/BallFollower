@@ -45,7 +45,10 @@ void loop() {
                 right(val[1]);
               }else if(val[0]==6){
                 left(val[1]);
+              }else if(val[0]){
+                roaming();
               }
+              
               
               /*Serial.print(val[0]);
               Serial.print("\n");
@@ -55,6 +58,8 @@ void loop() {
               Serial.print("\n");*/
 
               i=0;
+              //Serial.print(value);
+              Serial.flush();
             }
             inData = ""; // Clear recieved buffer
             //delay(200);
@@ -97,7 +102,29 @@ void right(int u){
    value=(u*255)/100;
    analogWrite(3, value);
    analogWrite(11, value); 
-   
-   //Serial.print(value);
-   Serial.flush();
+}  
+
+void roaming(){
+  int dir=random(0,3);
+  if(dir==0){
+    forward(100);
+  }else if(dir==1){
+   digitalWrite(12, LOW);  //Establishes backward direction of Channel A
+   digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+   digitalWrite(13, HIGH); //Establishes forward direction of Channel B
+   digitalWrite(8, LOW);   //Disengage the Brake for Channel 
+   analogWrite(3, 77);
+   analogWrite(11, 51); 
+  }else{
+   digitalWrite(12, LOW);  //Establishes backward direction of Channel A
+   digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+   digitalWrite(13, HIGH); //Establishes forward direction of Channel B
+   digitalWrite(8, LOW);   //Disengage the Brake for Channel 
+   analogWrite(3, 51);
+   analogWrite(11, 77); 
+  }
 }
+   
+
+
+

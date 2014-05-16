@@ -6,7 +6,7 @@ class Arduino:
 	
 	def __init__(self):
 		self.u = 0
-		self.ser = serial.Serial('/dev/ttyACM0', 9600)
+		self.ser = serial.Serial('/dev/ttyACM1', 9600)
 		
 	def setMotor(self, radius, e):
 		direction = ""

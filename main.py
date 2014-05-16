@@ -36,7 +36,7 @@ kernel = np.ones((5,5),np.uint8) #Kernel per erodi/dilata
 ball_state = 0
 notFoundCounter=0
 isRoaming=False
-roamingTImer=0
+roamingTimer=0
 #variabili per erosione dilatazione
 rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(21,21))
 rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(11,11))
@@ -148,6 +148,7 @@ while True:
 	#print circles
 	found = False
 	if circles is not None:
+		
 		maxRadius = 0
 		x = 0
 		y = 0
@@ -167,6 +168,7 @@ while True:
 			
 			
 	if (found and not isRoaming and (ball_state >= 2)):
+		notFoundCounter = 0
 		#cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
 		cv2.circle(hsvFrame, (x,y), maxRadius, (0,255,0),2)
 		print "Le coordinate del centro sono: ("+ str(x) +"," + str(y)+")"
