@@ -34,6 +34,9 @@ exit = 0 #Permette di uscire dal programma salvando i dati
 enableElab = 0 #Abilita/Disabilita l'erosione/dilatazione
 kernel = np.ones((5,5),np.uint8) #Kernel per erodi/dilata
 ball_state = 0
+notFoundCounter=0
+isRoaming=False
+roamingTImer=0
 #variabili per erosione dilatazione
 rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(21,21))
 rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(11,11))
@@ -102,7 +105,7 @@ createSlider()
 
 capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
 capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, IMAGE_HEIGHT)
-capture.set(cv2.cv.CV_CAP_PROP_FPS, 5)
+capture.set(cv2.cv.CV_CAP_PROP_FPS, 15)
 
 #loop principale del programma
 while True:
@@ -163,7 +166,7 @@ while True:
 		ball_state=0
 			
 			
-	if (found and (ball_state >= 2)):
+	if (found and not isRoaming and (ball_state >= 2)):
 		#cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
 		cv2.circle(hsvFrame, (x,y), maxRadius, (0,255,0),2)
 		print "Le coordinate del centro sono: ("+ str(x) +"," + str(y)+")"
@@ -174,9 +177,20 @@ while True:
 			#graph.updateVal(e) #update graph
 			motor.setMotor(maxRadius,e)
 	else:
-		#se non ho trovato nessuna pallina mi fermo
-		motor.changeSpeed(0,0)
-	
+
+		if(notFoundCounter<15):
+			notFoundCounter+=1
+		else:
+			isRoaming=True
+			roamingTimer+=1
+			if(roamingTimer==1):
+				motor.setRoaming()
+			elif(roamingTimer==15):
+				roamingTimer=0
+				iRoaming=False
+				notFoundCounter=0
+				motor.changeSpeed(0,0)
+
 	if enableFrame==0: #visualizzo le immagini 
 		#cv2.imshow(mainGui,cameraFeed) #immagine acquisita
 		cv2.imshow(hsvWindow, hsvFrame) #immagine con colori HSV
