@@ -11,13 +11,13 @@ class Arduino:
 	def setMotor(self, radius, e):
 		direction = ""
 		if(2 * radius > 100):
-			self.u = 75
+			self.u = 60
 			print "Forward"
 			direction = "8" + self.ENDING
 		else:
 			min_range = abs(5.3 * radius)			
 			if( e < min_range and e > -min_range):
-				self.u = 75
+				self.u = 60
 				print "Forward"
 				direction = "8" + self.ENDING
 			else:
