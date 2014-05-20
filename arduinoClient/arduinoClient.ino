@@ -105,9 +105,14 @@ void right(int u){
 }  
 
 void roaming(){
-  int dir=random(0,3);
+  int dir=random(0,5);
   if(dir==0){
-    forward(100);
+    digitalWrite(12, LOW);  //Establishes backward direction of Channel A
+    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+    digitalWrite(13, HIGH); //Establishes forward direction of Channel B
+    digitalWrite(8, LOW);   //Disengage the Brake for Channel 
+    analogWrite(3, 51);
+    analogWrite(11, 77); 
   }else if(dir==1){
    digitalWrite(12, LOW);  //Establishes backward direction of Channel A
    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
@@ -116,12 +121,7 @@ void roaming(){
    analogWrite(3, 77);
    analogWrite(11, 51); 
   }else{
-   digitalWrite(12, LOW);  //Establishes backward direction of Channel A
-   digitalWrite(9, LOW);   //Disengage the Brake for Channel A
-   digitalWrite(13, HIGH); //Establishes forward direction of Channel B
-   digitalWrite(8, LOW);   //Disengage the Brake for Channel 
-   analogWrite(3, 51);
-   analogWrite(11, 77); 
+   forward(85);
   }
 }
    
