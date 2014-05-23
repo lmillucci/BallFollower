@@ -33,7 +33,9 @@ delta_t = 200 #intervallo di tempo prima di passare al frame successivo
 exit = 0 #Permette di uscire dal programma salvando i dati
 enableElab = 0 #Abilita/Disabilita l'erosione/dilatazione
 kernel = np.ones((5,5),np.uint8) #Kernel per erodi/dilata
-ball_state = 0
+ball_state = 0 #permette di ridurre il rumore
+roaming_timer = 0 #conta il tempo in cui non vedo palline
+
 #variabili per erosione dilatazione
 rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(21,21))
 rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(11,11))
@@ -164,6 +166,7 @@ while True:
 
 
 	if (found and (ball_state >= 2)):
+		roaming_timer = 0 #quando vedo la pallina azzero il contatore dei frame in cui non la trovo
 		#cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
 		cv2.circle(hsvFrame, (x,y), maxRadius, (0,255,0),2)
 		print "Le coordinate del centro sono: ("+ str(x) +"," + str(y)+")"
@@ -175,8 +178,18 @@ while True:
 			#motor.setMotor(maxRadius,e)
 	else:
 		#se non ho trovato nessuna pallina mi fermo
+		roaming_timer += 1 #quando non vedo palline incremento il timer
 		#motor.changeSpeed(0,0)
-		pass
+		if roaming_timer % 10 == 0:
+			#inizio a girare
+			motor.changeSpeed(25, 35)
+			
+		if roaming_timer % 10 == 5:
+			#mi fermo
+			motor.changeSpeed(0, 0)
+		if roaming_timer > 100:
+			motor.changeSpeed(0, 0)
+			
 
 	if enableFrame==0: #visualizzo le immagini 
 		#cv2.imshow(mainGui,cameraFeed) #immagine acquisita
