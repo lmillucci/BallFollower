@@ -34,14 +34,11 @@ exit = 0 #Permette di uscire dal programma salvando i dati
 enableElab = 0 #Abilita/Disabilita l'erosione/dilatazione
 kernel = np.ones((5,5),np.uint8) #Kernel per erodi/dilata
 ball_state = 0
-notFoundCounter=0
-isRoaming=False
-roamingTimer=0
 #variabili per erosione dilatazione
 rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(21,21))
 rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(11,11))
 #Creazione oggetto della classe
-motor = Arduino()
+#motor = Arduino()
 graph = Graph()
 
 def onTrackbarSlide(*args):
@@ -58,7 +55,7 @@ def saveValue():
 	out_file = open("parametri.txt","w")
 	out_file.write(saveData)
 	out_file.close()
-	
+
 def loadValue():
 	try:
 		in_file = open("parametri.txt","r")
@@ -75,7 +72,7 @@ def loadValue():
 		print str(s)
 	except Exception as detail:
 		print "ERROR: impossible load settings from file", detail
-	
+
 def createSlider():
 	cv2.namedWindow(settingWindow,1);
 	#metodo che crea le trackbar(label, finestra, valore da cambiare, valore massimo,action listener)
@@ -89,8 +86,8 @@ def createSlider():
 	cv2.createTrackbar("Aggiornamento FRAME", settingWindow, 0, 1, onTrackbarSlide)
 	cv2.createTrackbar("Erodi/dilata", settingWindow, 0, 1, onTrackbarSlide)
 	cv2.createTrackbar("EXIT", settingWindow, 0, 1, onTrackbarSlide)
-	
-	
+
+
 
 
 #imposto la sorgente per l'acquisizione
@@ -105,14 +102,14 @@ createSlider()
 
 capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
 capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, IMAGE_HEIGHT)
-capture.set(cv2.cv.CV_CAP_PROP_FPS, 15)
+capture.set(cv2.cv.CV_CAP_PROP_FPS, 20)
 
 #loop principale del programma
 while True:
 	#definisco la variabile per i frame catturati
 	_,cameraFeed = capture.read()
 	cameraFeed = cv2.flip(cameraFeed,1)
-	
+
 	#creo un immagine temporanea per poter applicare il median blur
 	tmp = cv2.medianBlur(cameraFeed, 5)
 
@@ -131,28 +128,27 @@ while True:
 	if enableElab == 1:
 		thresholded = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, kernel)
 		thresholded = cv2.morphologyEx(thresholded, cv2.MORPH_CLOSE, kernel)
-	
+
 	#Verifico se attivare il motore
 	enableMotor = cv2.getTrackbarPos("Motori I/O",settingWindow)
-	
+
 	#Verifico se attivare i frame
 	enableFrame = cv2.getTrackbarPos("Aggiornamento FRAME", settingWindow)
 
 	#Verifico se uscire
 	exit = cv2.getTrackbarPos("EXIT",settingWindow)
-	
+
 	#applico Hough
 	circles = cv2.HoughCircles(thresholded, cv2.cv.CV_HOUGH_GRADIENT, dp=2, minDist=60, param1=100, param2=40, minRadius=5, maxRadius=60)
-	
+
 	#ATTENZIONE circles e una matrice 1xnx3
 	#print circles
 	found = False
 	if circles is not None:
-		
 		maxRadius = 0
 		x = 0
 		y = 0
-		
+
 		for i in range(circles.size/3):
 			circle=circles[0,i]
 			cv2.circle(hsvFrame, (circle[0],circle[1]), circle[2], (255,0,0),2)
@@ -165,33 +161,22 @@ while True:
 		ball_state += 1
 	else:
 		ball_state=0
-			
-			
-	if (found and not isRoaming and (ball_state >= 2)):
-		notFoundCounter = 0
+
+
+	if (found and (ball_state >= 2)):
 		#cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
 		cv2.circle(hsvFrame, (x,y), maxRadius, (0,255,0),2)
 		print "Le coordinate del centro sono: ("+ str(x) +"," + str(y)+")"
 		if enableMotor:
 			e = (int)(x)-target #variabile errore >0 oggetto a dx
 									#<0 oggetto a sx
-			
-			#graph.updateVal(e) #update graph
-			motor.setMotor(maxRadius,e)
-	else:
 
-		if(notFoundCounter<15):
-			notFoundCounter+=1
-		else:
-			isRoaming=True
-			roamingTimer+=1
-			if(roamingTimer==1):
-				motor.setRoaming()
-			elif(roamingTimer==15):
-				roamingTimer=0
-				iRoaming=False
-				notFoundCounter=0
-				motor.changeSpeed(0,0)
+			#graph.updateVal(e) #update graph
+			#motor.setMotor(maxRadius,e)
+	else:
+		#se non ho trovato nessuna pallina mi fermo
+		#motor.changeSpeed(0,0)
+		pass
 
 	if enableFrame==0: #visualizzo le immagini 
 		#cv2.imshow(mainGui,cameraFeed) #immagine acquisita
@@ -202,7 +187,7 @@ while True:
 	escKey = cv2.waitKey(delta_t)
 	if escKey==27:
 		break
-	
+
 	if exit:
 		break
 
