@@ -1,5 +1,5 @@
 String inData;
-int val[2];
+int val[3];
 int i=0;
 int j;
 
@@ -26,18 +26,14 @@ void loop() {
         // Process message when new line character is recieved
         if (recieved == '\n')
         {
-            //Serial.print("Arduino Received: ");
-            //Serial.print(inData);
             val[i]=inData.toInt();
             i++;
-
-            // You can put some if and else here to process the message juste like that:
 
             if(inData == "+++\n"){ // DON'T forget to add "\n" at the end of the string.
               //Serial.println("OK. Press h for help.");
             }   
 
-            if(i==2){
+            if(i==3){
               if(val[0]==8){
                 forward(val[1]);
               }
@@ -45,17 +41,10 @@ void loop() {
                 right(val[1]);
               }else if(val[0]==6){
                 left(val[1]);
-              }else if(val[0]){
-                roaming();
+              }else if(val[0] == 5){
+                changeSpeed(val[1], val[2]);
               }
               
-              
-              /*Serial.print(val[0]);
-              Serial.print("\n");
-              Serial.print(val[1]);
-              Serial.print("\n");
-              Serial.print("-------");
-              Serial.print("\n");*/
 
               i=0;
               //Serial.print(value);
@@ -104,25 +93,16 @@ void right(int u){
    analogWrite(11, value); 
 }  
 
-void roaming(){
-  int dir=random(0,5);
-  if(dir==0){
-    digitalWrite(12, LOW);  //Establishes backward direction of Channel A
-    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
-    digitalWrite(13, HIGH); //Establishes forward direction of Channel B
-    digitalWrite(8, LOW);   //Disengage the Brake for Channel 
-    analogWrite(3, 51);
-    analogWrite(11, 77); 
-  }else if(dir==1){
+void changeSpeed(int left,int right){
    digitalWrite(12, LOW);  //Establishes backward direction of Channel A
    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
    digitalWrite(13, HIGH); //Establishes forward direction of Channel B
-   digitalWrite(8, LOW);   //Disengage the Brake for Channel 
-   analogWrite(3, 77);
-   analogWrite(11, 51); 
-  }else{
-   forward(85);
-  }
+   digitalWrite(8, LOW);   //Disengage the Brake for Channel B
+   int value_left, value_right;
+   value_left=(left*255)/100;
+   value_right=(right*255)/100;
+   analogWrite(3, value_left);
+   analogWrite(11, value_right); 
 }
    
 

@@ -29,17 +29,17 @@ class Arduino:
 					print "Left"
 					direction = "4" + self.ENDING
 		
-		direction += str(self.u) + self.ENDING
+		direction += str(self.u) + self.ENDING + "0" + self.ENDING
 		print direction
 		self.ser.write(direction)
 
 	def setRoaming(self):
-		direction="5"+self.ENDING+"0"+self.ENDING
+		direction="5"+self.ENDING+"0"+self.ENDING + "0" + self.ENDING
 		self.ser.write(direction)
 
 	
 	def changeSpeed(self, value_left, value_right):
-		direction="8" + self.ENDING + "0" + self.ENDING
+		direction="5" + self.ENDING + value_left + self.ENDING + value_right + self.ENDING
 		print direction
 		self.ser.write(direction)
 	
