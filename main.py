@@ -189,7 +189,8 @@ while True:
 			motor.changeSpeed(0, 0)
 		if roaming_timer > 100:
 			motor.changeSpeed(0, 0)
-			
+			roaming_timer = 0 #azzero il timer per ricominciare il ciclo
+			#in futuro dovro iniziare a fare la spirale 
 
 	if enableFrame==0: #visualizzo le immagini 
 		#cv2.imshow(mainGui,cameraFeed) #immagine acquisita
@@ -207,4 +208,4 @@ while True:
 saveValue()
 cv2.destroyAllWindows()
 cv2.VideoCapture(0).release()
-#motor.onClose()
+motor.onClose()
