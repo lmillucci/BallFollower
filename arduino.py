@@ -44,5 +44,6 @@ class Arduino:
 		self.ser.write(direction)
 	
 	def onClose(self):
-		#TO-DO
+		#mi fermo mettendo a 0 entrambi i motori
+		direction="5" + self.ENDING + "0" + self.ENDING + "0" + self.ENDING
 		pass
