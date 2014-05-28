@@ -40,7 +40,7 @@ roaming_timer = 0 #conta il tempo in cui non vedo palline
 rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(21,21))
 rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(11,11))
 #Creazione oggetto della classe
-#motor = Arduino()
+motor = Arduino()
 graph = Graph()
 
 def onTrackbarSlide(*args):
@@ -175,17 +175,17 @@ while True:
 									#<0 oggetto a sx
 
 			#graph.updateVal(e) #update graph
-			#motor.setMotor(maxRadius,e)
+			motor.setMotor(maxRadius,e)
 	else:
 		#se non ho trovato nessuna pallina mi fermo
 		roaming_timer += 1 #quando non vedo palline incremento il timer
 		#motor.changeSpeed(0,0)
-		if roaming_timer % 40 == 0:
+		if roaming_timer % 20 == 0:
 			#mi fermo
 			motor.changeSpeed(0, 0)
 		elif roaming_timer % 10 == 0:
 			#inizio a girare
-			motor.changeSpeed(25, 35)
+			motor.changeSpeed(0, 35)
 		if roaming_timer > 100:
 			motor.changeSpeed(0, 0)
 			roaming_timer = 0 #azzero il timer per ricominciare il ciclo
