@@ -178,7 +178,7 @@ while True:
 
 			#graph.updateVal(e) #update graph
 			motor.setMotor(maxRadius,e)
-	elif enableMotor:
+	elif (enableMotor and (ball_state==0)):
 		#se non ho trovato nessuna pallina mi fermo
 		roaming_timer += 1 #quando non vedo palline incremento il timer
 		#motor.changeSpeed(0,0)
