@@ -45,5 +45,4 @@ class Arduino:
 	
 	def onClose(self):
 		#mi fermo mettendo a 0 entrambi i motori
-		direction="5" + self.ENDING + "0" + self.ENDING + "0" + self.ENDING
-		pass
+		changeSpeed(0,0)
