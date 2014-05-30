@@ -35,6 +35,7 @@ enableElab = 0 #Abilita/Disabilita l'erosione/dilatazione
 kernel = np.ones((5,5),np.uint8) #Kernel per erodi/dilata
 ball_state = 0 #permette di ridurre il rumore
 roaming_timer = 0 #conta il tempo in cui non vedo palline
+spiral = 0 #moltiplicatore per aumentare raggio spirale
 
 #variabili per erosione dilatazione
 rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(21,21))
@@ -167,6 +168,7 @@ while True:
 
 	if (found and (ball_state >= 2)):
 		roaming_timer = 0 #quando vedo la pallina azzero il contatore dei frame in cui non la trovo
+		spiral = 0 #azzero il raggio della spirale quando trovo una pallina
 		#cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
 		cv2.circle(hsvFrame, (x,y), maxRadius, (0,255,0),2)
 		print "Le coordinate del centro sono: ("+ str(x) +"," + str(y)+")"
@@ -176,20 +178,26 @@ while True:
 
 			#graph.updateVal(e) #update graph
 			motor.setMotor(maxRadius,e)
-	else:
+	elif enableMotor:
 		#se non ho trovato nessuna pallina mi fermo
 		roaming_timer += 1 #quando non vedo palline incremento il timer
 		#motor.changeSpeed(0,0)
-		if roaming_timer % 20 == 0:
+		if roaming_timer % 20 == 0 and roaming_timer<100:
 			#mi fermo
 			motor.changeSpeed(0, 0)
-		elif roaming_timer % 10 == 0:
+		elif roaming_timer % 10 == 0 and roaming_timer<100:
 			#inizio a girare
-			motor.changeSpeed(0, 35)
-		if roaming_timer > 100:
+			motor.changeSpeed(22, 35)
+		if roaming_timer == 100:
+			#motor.changeSpeed(0, 0)
+			#roaming_timer = 0
+			left=min(50,30+(3*spiral))
+			right=min(40,20+(3*spiral))
+			motor.changeSpeed(right,left)
+		if roaming_timer > 180:
 			motor.changeSpeed(0, 0)
-			roaming_timer = 0 #azzero il timer per ricominciare il ciclo
-			#in futuro dovro iniziare a fare la spirale 
+			spiral+=1
+			roaming_timer = 0 
 
 	if enableFrame==0: #visualizzo le immagini 
 		#cv2.imshow(mainGui,cameraFeed) #immagine acquisita
