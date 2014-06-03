@@ -182,18 +182,18 @@ while True:
 		#se non ho trovato nessuna pallina mi fermo
 		roaming_timer += 1 #quando non vedo palline incremento il timer
 		#motor.changeSpeed(0,0)
-		if roaming_timer % 20 == 0 and roaming_timer<100:
+		if roaming_timer % 20 == 0 and roaming_timer<80:
 			#mi fermo
 			motor.changeSpeed(0, 0)
-		elif roaming_timer % 10 == 0 and roaming_timer<100:
+		elif roaming_timer % 15 == 0 and roaming_timer<80:
 			#inizio a girare
 			motor.changeSpeed(22, 35)
-		if roaming_timer == 100:
+		if roaming_timer == 80:
 			#motor.changeSpeed(0, 0)
 			#roaming_timer = 0
-			left=min(50,30+(3*spiral))
-			right=min(40,20+(3*spiral))
-			motor.changeSpeed(right,left)
+			#left=min(50,30+(7*spiral))
+			#right=min(40,20+(7*spiral))
+			motor.changeSpeed(30,30)
 		if roaming_timer > 180:
 			motor.changeSpeed(0, 0)
 			spiral+=1
