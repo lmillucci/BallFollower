@@ -15,13 +15,13 @@ class Arduino:
 			print "Forward"
 			direction = "8" + self.ENDING
 		else:
-			min_range = abs(5.3 * radius)			
+			min_range = abs(5.3 * radius) 		
 			if( e < min_range and e > -min_range):
 				self.u = 60
 				print "Forward"
 				direction = "8" + self.ENDING
 			else:
-				self.u = (int)((10 / (320 - min_range)) * (abs(e) - min_range) + 20) 
+				self.u = (int)(((30-20) / (320 - min_range)) * (abs(e) - min_range) + 20) #30 e 20 sono max e min pwm
 				if e > 0: 
 					print "Right"
 					direction = "6" + self.ENDING
