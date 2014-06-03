@@ -45,4 +45,4 @@ class Arduino:
 	
 	def onClose(self):
 		#mi fermo mettendo a 0 entrambi i motori
-		changeSpeed(0,0)
+		self.changeSpeed(0,0)
