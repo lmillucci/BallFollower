@@ -16,7 +16,13 @@ class ClientVideoApp:
     global tresh_bar_socket
     global manual_mode
     global TCP_IP
-    global TCP_PORT 
+    global TCP_PORT
+    global minH
+    global minS
+    global minV
+    global maxH
+    global maxS
+    global maxV
 
     def updateVideoFrame(self,master):
         master.after(0,self.update_frame(master,self.main_Video,self.thresh_Video))
@@ -49,7 +55,10 @@ class ClientVideoApp:
             threshVideo.configure(image=b2)
             master.update()
 
-            self.client_socket.send("continue")
+            self.client_socket.send("tresh;"+str(self.minH)+";"+str(self.minS)+";"+str(self.minV)+";"+str(self.maxH)+";"+str(self.maxS)+";"+str(self.maxV))
+
+            #self.client_socket.send("continue")
+            
         master.after(0,func=lambda:self.update_frame(master,self.main_Video,self.thresh_Video))
 
     #define method for change manual/automatic motion
@@ -68,16 +77,16 @@ class ClientVideoApp:
             self.enableManualButton.image = onPhoto #needed for save image from garbage collection
 
     def turn_right(self):
-        self.client_socket.send("comando:Rvelocita30")
+        self.client_socket.send("comando;R;30")
 
     def turn_left(self):
-        self.client_socket.send("comando:Lvelocita30")
+        self.client_socket.send("comando;L;30")
 
     def forward(self):
-        self.client_socket.send("comando:Fvelocita30")
+        self.client_socket.send("comando;F;30")
 
     def fastForward(self):
-        self.client_socket.send("comando:Fvelocita60")
+        self.client_socket.send("comando;F;60")
         
     def recvall(self, sock, count):
         buf = b''
@@ -125,53 +134,53 @@ class ClientVideoApp:
         thresholdsInfoLabel.place(x=655,y=495,height=30,width=640)
 
         #define min and max HSV values
-        minH = IntVar()
-        minS = IntVar()
-        minV = IntVar()
-        maxH = IntVar()
-        maxS = IntVar()
-        maxV = IntVar()
+        self.minH = IntVar()
+        self.minS = IntVar()
+        self.minV = IntVar()
+        self.maxH = IntVar()
+        self.maxS = IntVar()
+        self.maxV = IntVar()
 
         #minH slider
         minHInfo = Label(master,text="Min H",relief=RAISED,bg="black",fg="white")
         minHInfo.pack()
         minHInfo.place(x=655,y=525,height=40,width=40)
-        minHSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=minH,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        minHSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.minH,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
         minHSlider.pack()
         minHSlider.place(x=695,y=525,height=40,width=280)
         #minS slider
         minSInfo = Label(master,text="Min S",relief=RAISED,bg="black",fg="white")
         minSInfo.pack()
         minSInfo.place(x=655,y=565,height=40,width=40)
-        minSSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=minS,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        minSSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.minS,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
         minSSlider.pack()
         minSSlider.place(x=695,y=565,height=40,width=280)
         #minV slider
         minVInfo = Label(master,text="Min V",relief=RAISED,bg="black",fg="white")
         minVInfo.pack()
         minVInfo.place(x=655,y=605,height=40,width=40)
-        minVSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=minV,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        minVSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.minV,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
         minVSlider.pack()
         minVSlider.place(x=695,y=605,height=40,width=280)
         #max H slider
         maxHInfo = Label(master,text="Max H",relief=RAISED,bg="black",fg="white")
         maxHInfo.pack()
         maxHInfo.place(x=975,y=525,height=40,width=40)
-        maxHSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=maxH,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        maxHSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.maxH,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
         maxHSlider.pack()
         maxHSlider.place(x=1015,y=525,height=40,width=280)
         #max S slider
         maxSInfo = Label(master,text="Max S",relief=RAISED,bg="black",fg="white")
         maxSInfo.pack()
         maxSInfo.place(x=975,y=565,height=40,width=40)
-        maxSSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=maxS,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        maxSSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.maxS,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
         maxSSlider.pack()
         maxSSlider.place(x=1015,y=565,height=40,width=280)
         #max V slider
         maxVInfo = Label(master,text="Max V",relief=RAISED,bg="black",fg="white")
         maxVInfo.pack()
         maxVInfo.place(x=975,y=605,height=40,width=40)
-        maxVSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=maxV,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
+        maxVSlider = Scale(master,bd=1,from_=0,to=256,bg="black",fg="white",variable=self.maxV,orient=HORIZONTAL,troughcolor="black",relief=RAISED)
         maxVSlider.pack()
         maxVSlider.place(x=1015,y=605,height=40,width=280)
 
@@ -213,7 +222,7 @@ root.title("Client Video App")
 client.updateVideoFrame(root)
 root.mainloop()
 if client.socket_is_ready:
-    client.client_socket.send("end")
+    client.client_socket.send("end;rocco")
 try:
     root.destroy()
 except:
