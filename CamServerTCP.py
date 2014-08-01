@@ -13,14 +13,21 @@ capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 480)
 
 client_socket = None
 
+minH = 26
+minS = 75
+minV = 67
+maxH = 256
+maxS = 256
+maxV = 256
+
 while True:
     if (client_socket is None):
         client_socket, address = server_socket.accept()
         print "Open socket whit: " , address
     _,frame = capture.read()
     
-    minColor = numpy.array((26,75,67))
-    maxColor = numpy.array((256,256,256))
+    minColor = numpy.array((minH,minS,minV))
+    maxColor = numpy.array((maxH,maxS,maxV))
     frame2 = cv2.inRange(frame,minColor,maxColor)
 
     encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
@@ -39,23 +46,28 @@ while True:
         pass
     try:
         ricevuto = client_socket.recv(1024)
-        try:
-            direzione = ricevuto.split("velocita")
-        except:
-            direzione = None
-            pass
-        if ricevuto=="end":
+        option = ricevuto.split(";")
+        if option[0]=="end":
             print "Ho ricevuto l'end dal Client"
             client_socket.close()
             client_socket = None
-        elif(direzione[0]=="comando:F"):
-            print "Forward at ",direzione[1]
-        elif(direzione[0]=="comando:L"):
-            print "Left at ",direzione[1]
-        elif(direzione[0]=="comando:R"):
-            print "Right at ",direzione[1]
+        elif option[0]=="comando":
+            if(option[1]=="F"):
+                print "Forward at ",option[2]
+            elif(option[1]=="L"):
+                print "Left at ",option[2]
+            elif(option[1]=="R"):
+                print "Right at ",option[2]
+        elif option[0]=="tresh":
+            minH = int(option[1])
+            minS = int(option[2])
+            minV = int(option[3])
+            maxH = int(option[4])
+            maxS = int(option[5])
+            maxV = int(option[6])
         else:
             #devo continuare
+            pass
     except:
         client_socket.close()
         client_socket = None
