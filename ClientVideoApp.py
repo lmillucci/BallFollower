@@ -34,46 +34,21 @@ class ClientVideoApp:
             data_list = stringData.split("separatore")
             data1 = numpy.fromstring(data_list[0], dtype='uint8')
             data2 = numpy.fromstring(data_list[1], dtype='uint8')
-            
-            #split data
-            #dataB = data.split("separatore")
-            #conversion string2Array1D
-            #mainArray1D = numpy.fromstring(dataB[0] ,dtype='uint8')
-            #print mainArray1D
-            '''
-            try:
-                treshArray1D = numpy.fromstring(dataB[1], dtype='uint8')
-            except:
-                pass
-            #cleaning data
-            
-            data = None
-        #trying to convert array1D on 2D and 3D
-        try:
-            mainImg = numpy.reshape(mainArray1D,(480,640,3))
-            print mainImg
-            mainImg = cv2.cvtColor(mainImg,cv2.COLOR_BGR2RGB)
-        except:
-            mainImg = numpy.zeros((480,640,3))
-        try:
-            threshImg = numpy.reshape(threshArray1D,(480,640))
-        except:
-            threshImg = numpy.zeros((480,640))
-            '''
+
             
             image1 = cv2.imdecode(data1, 1)
             image2 = cv2.imdecode(data2, 1)
             image1 = cv2.cvtColor(image1,cv2.COLOR_BGR2RGB)
             
-        #changing color space because PIL use RGB representation
-        a1 = Image.fromarray(numpy.uint8(image1))
-        a2 = Image.fromarray(numpy.uint8(image2))
-        b1 = ImageTk.PhotoImage(image=a1)
-        b2 = ImageTk.PhotoImage(image=a2)
-        mainVideo.configure(image=b1)
-        threshVideo.configure(image=b2)
-        master.update()
-        if self.socket_is_ready:
+            #changing color space because PIL use RGB representation
+            a1 = Image.fromarray(numpy.uint8(image1))
+            a2 = Image.fromarray(numpy.uint8(image2))
+            b1 = ImageTk.PhotoImage(image=a1)
+            b2 = ImageTk.PhotoImage(image=a2)
+            mainVideo.configure(image=b1)
+            threshVideo.configure(image=b2)
+            master.update()
+
             self.client_socket.send("continue")
         master.after(0,func=lambda:self.update_frame(master,self.main_Video,self.thresh_Video))
 
@@ -93,16 +68,16 @@ class ClientVideoApp:
             self.enableManualButton.image = onPhoto #needed for save image from garbage collection
 
     def turn_right(self):
-        pass
+        self.client_socket.send("comando:Rvelocita30")
 
     def turn_left(self):
-        pass
+        self.client_socket.send("comando:Lvelocita30")
 
     def forward(self):
-        pass
+        self.client_socket.send("comando:Fvelocita30")
 
     def fastForward(self):
-        pass
+        self.client_socket.send("comando:Fvelocita60")
         
     def recvall(self, sock, count):
         buf = b''
