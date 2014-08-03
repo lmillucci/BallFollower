@@ -58,7 +58,7 @@ while True:
                 print "Left at ",option[2]
             elif(option[1]=="R"):
                 print "Right at ",option[2]
-        elif option[0]=="tresh":
+        elif option[0]=="soglie":
             minH = int(option[1])
             minS = int(option[2])
             minV = int(option[3])
