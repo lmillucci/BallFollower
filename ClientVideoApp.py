@@ -55,7 +55,7 @@ class ClientVideoApp:
             threshVideo.configure(image=b2)
             master.update()
 
-            self.client_socket.send("tresh;"+str(self.minH)+";"+str(self.minS)+";"+str(self.minV)+";"+str(self.maxH)+";"+str(self.maxS)+";"+str(self.maxV))
+            self.client_socket.send("soglie;"+str(self.minH)+";"+str(self.minS)+";"+str(self.minV)+";"+str(self.maxH)+";"+str(self.maxS)+";"+str(self.maxV))
 
             #self.client_socket.send("continue")
             
