@@ -57,7 +57,7 @@ def initSocketThread():
         global client_socket
         global server_socket
         TCP_IP = ''
-        TCP_PORT = 32234
+        TCP_PORT = 32239
 
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
@@ -204,9 +204,9 @@ while True:
                 if(manualDir=="F"):
                         motor.changeSpeed(manualSpeed,manualSpeed)
                 elif(manualDir=="L"):
-                        motor.changeSpeed(max(manualSpeed-10,0),manualSpeed)
+                        motor.changeSpeed(manualSpeed, 20)
                 elif(manualDir=="R"):
-                        motor.changeSpeed(manualSpeed,max(manualSpeed-10,0))
+                        motor.changeSpeed(20, manualSpeed)
                 
         elif (found and (ball_state >= 2)):
                 roaming_timer = 0 #quando vedo la pallina azzero il contatore dei frame in cui non la trovo
@@ -297,9 +297,11 @@ while True:
                         elif option[0]=="manuale":
                             if option[1]=="on":
                                 manualMode=True
+                                motor.changeSpeed(0,0)
                                 print "manuale"
                             else:
                                 manualMode=False
+                                motor.changeSpeed(0,0)
                                 print "automatico"
                         else:
                             #devo continuare
