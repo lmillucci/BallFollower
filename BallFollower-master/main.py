@@ -38,13 +38,16 @@ kernel = np.ones((5,5),np.uint8) #Kernel per erodi/dilata
 ball_state = 0 #permette di ridurre il rumore
 roaming_timer = 0 #conta il tempo in cui non vedo palline
 spiral = 0 #moltiplicatore per aumentare raggio spirale
+manualMode=False #parametro per abilitare modalita maunale
+manualDir=None #direzione in modalita manuale
+manualSpeed=0 #velocita in modalita manuale
 
 #variabili per erosione dilatazione
 rectErosione = cv2.getStructuringElement(cv2.MORPH_RECT,(21,21))
 rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(11,11))
 #Creazione oggetto della classe
 motor = Arduino()
-graph = Graph()
+#graph = Graph()
 
 #variabili per la gestione del socket
 client_socket = None
@@ -54,9 +57,10 @@ def initSocketThread():
         global client_socket
         global server_socket
         TCP_IP = ''
-        TCP_PORT = 32232
+        TCP_PORT = 32234
 
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
         server_socket.bind((TCP_IP,TCP_PORT))
         server_socket.listen(5)
         
@@ -65,7 +69,7 @@ def initSocketThread():
                         client_socket, address = server_socket.accept()
                         print "Open socket whit: " , address
                 else:
-                        break
+                        thread.exit()
 
 def onTrackbarSlide(*args):
         pass
@@ -150,8 +154,10 @@ while True:
         hsvFrame = cv2.cvtColor(tmp,cv2.COLOR_BGR2HSV)
 
         #filtro hsvFrame cercando solo un determinato range di colori
-        minColor = np.array((cv2.getTrackbarPos("H-min",settingWindow),cv2.getTrackbarPos("S-min",settingWindow),cv2.getTrackbarPos("V-min",settingWindow)))
-        maxColor = np.array((cv2.getTrackbarPos("H-max",settingWindow),cv2.getTrackbarPos("S-max",settingWindow),cv2.getTrackbarPos("V-max",settingWindow)))
+        #minColor = np.array((cv2.getTrackbarPos("H-min",settingWindow),cv2.getTrackbarPos("S-min",settingWindow),cv2.getTrackbarPos("V-min",settingWindow)))
+        #maxColor = np.array((cv2.getTrackbarPos("H-max",settingWindow),cv2.getTrackbarPos("S-max",settingWindow),cv2.getTrackbarPos("V-max",settingWindow)))
+        minColor = np.array((H_MIN,S_MIN,V_MIN))
+        maxColor = np.array((H_MAX,S_MAX,V_MAX))
         thresholded = cv2.inRange(hsvFrame,minColor, maxColor);
 
         #Verifico se attivare l elaborazione immagine
@@ -194,8 +200,15 @@ while True:
         else:
                 ball_state=0
 
-
-        if (found and (ball_state >= 2)):
+        if(manualMode):
+                if(manualDir=="F"):
+                        motor.changeSpeed(manualSpeed,manualSpeed)
+                elif(manualDir=="L"):
+                        motor.changeSpeed(max(manualSpeed-10,0),manualSpeed)
+                elif(manualDir=="R"):
+                        motor.changeSpeed(manualSpeed,max(manualSpeed-10,0))
+                
+        elif (found and (ball_state >= 2)):
                 roaming_timer = 0 #quando vedo la pallina azzero il contatore dei frame in cui non la trovo
                 spiral = 0 #azzero il raggio della spirale quando trovo una pallina
                 #cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
@@ -207,7 +220,7 @@ while True:
 
                         #graph.updateVal(e) #update graph
                         motor.setMotor(maxRadius,e)
-        elif (enableMotor and (ball_state==0)):
+        elif (enableMotor and (ball_state==0) and (not manualMode)):
                 #se non ho trovato nessuna pallina mi fermo
                 roaming_timer += 1 #quando non vedo palline incremento il timer
                 #motor.changeSpeed(0,0)
@@ -234,7 +247,6 @@ while True:
                 cv2.imshow(thresholdWindow,thresholded) #immagine Threshold
 
         if not (client_socket is None):
-                print "ciao panzone"
                 encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
                 #encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
                 #encoding frame and frame2
@@ -256,7 +268,14 @@ while True:
                         if option[0]=="end":
                             print "Ho ricevuto l'end dal Client"
                             client_socket.close()
+                            server_socket.close()
                             client_socket = None
+                            server_socket = None
+                            try:
+                                thread.start_new_thread(initSocketThread, ())
+                            except:
+                                print "ERROR during initSocketThread"
+                            
                         elif option[0]=="comando":
                             if(option[1]=="F"):
                                 print "Forward at ",option[2]
@@ -264,13 +283,24 @@ while True:
                                 print "Left at ",option[2]
                             elif(option[1]=="R"):
                                 print "Right at ",option[2]
+                            manualDir=option[1]
+                            manualSpeed=option[2]
                         elif option[0]=="soglie":
-                            minH = int(option[1])
-                            minS = int(option[2])
-                            minV = int(option[3])
-                            maxH = int(option[4])
-                            maxS = int(option[5])
-                            maxV = int(option[6])
+                            #global H_MIN, S_MIN, V_MIN, H_MAX, S_MAX,V_MAX
+                            H_MIN = int(option[1])
+                            S_MIN = int(option[2])
+                            V_MIN = int(option[3])
+                            H_MAX = int(option[4])
+                            S_MAX = int(option[5])
+                            V_MAX = int(option[6])
+                            print "H_MIN ",H_MIN
+                        elif option[0]=="manuale":
+                            if option[1]=="on":
+                                manualMode=True
+                                print "manuale"
+                            else:
+                                manualMode=False
+                                print "automatico"
                         else:
                             #devo continuare
                             pass
