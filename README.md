@@ -5,4 +5,4 @@ The main goal of this project is recognise using a webcam and openCV library a t
 
 Dependencies
 ============
-* Matplotlib (sudo apt-get install python-matplotlib)
+* python-opencv
