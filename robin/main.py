@@ -45,7 +45,7 @@ def initSocketThread():
         global client_socket
         global server_socket
         TCP_IP = ''
-        TCP_PORT = 32241
+        TCP_PORT = 32242
 
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
@@ -178,7 +178,7 @@ def modeManual():
             motor.changeSpeed(20, manualSpeed)
 
 def tXrX(cameraFeed, thresholded):
-    global client_socket, server_socket, manualDir, manualSpeed
+    global client_socket, server_socket, manualDir, manualSpeed, manualMode
     encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
     #encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
     #encoding frame and frame2
@@ -218,7 +218,7 @@ def tXrX(cameraFeed, thresholded):
                 manualDir=option[1]
                 manualSpeed=option[2]
             elif option[0]=="soglie":
-                #global H_MIN, S_MIN, V_MIN, H_MAX, S_MAX,V_MAX
+                global H_MIN, S_MIN, V_MIN, H_MAX, S_MAX,V_MAX
                 H_MIN = int(option[1])
                 S_MIN = int(option[2])
                 V_MIN = int(option[3])
@@ -289,7 +289,7 @@ while True:
     #variabile su cui salvo l'immagine HSV
     hsvFrame = cv2.cvtColor(tmp,cv2.COLOR_BGR2HSV)
 
-    if not manualMode:
+    if manualMode:
         #filtro hsvFrame cercando solo un determinato range di colori
         minColor = np.array((cv2.getTrackbarPos("H-min",settingWindow),cv2.getTrackbarPos("S-min",settingWindow),cv2.getTrackbarPos("V-min",settingWindow)))
         maxColor = np.array((cv2.getTrackbarPos("H-max",settingWindow),cv2.getTrackbarPos("S-max",settingWindow),cv2.getTrackbarPos("V-max",settingWindow)))
