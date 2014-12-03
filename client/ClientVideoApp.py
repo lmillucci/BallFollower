@@ -255,7 +255,7 @@ class ClientVideoApp:
         stopButton.pack()
         #stopButton.image = stopPhoto
         stopButton.place(x=335, y=625, height=50, width=100)
-        enableMotorButton = Button(master, command=self.enableMotor, bg="blue", relief=RAISED)
+        enableMotorButton = Button(master, command=self.enableMotor, bg="green", relief=RAISED)
         enableMotorButton.pack()
         enableMotorButton.place(x=435, y=525, height=20, width=20)
         disableMotorButton = Button(master, command=self.disableMotor, bg="red", relief=RAISED)

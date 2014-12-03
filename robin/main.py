@@ -246,10 +246,10 @@ def tXrX(cameraFeed, thresholded):
             elif option[0]=="nomotor":
                 if option[1]=="on":
                     enableMotor = 1
-                    print "Enabled motor"
+                    print "-----------------------------------------------------Enabled motor"
                 elif option[1]=="off":
                     enableMotor = 0
-                    print "Disabled motor"
+                    print "-----------------------------------------------------Disabled motor"
             else:
                 #devo continuare
                 pass
@@ -320,8 +320,9 @@ while True:
     #applico erosione e dilatazione
     enableElab = 0
     if enableElab == 1:
-            thresholded = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, kernel)
-            thresholded = cv2.morphologyEx(thresholded, cv2.MORPH_CLOSE, kernel)
+            #thresholded = cv2.morphologyEx(thresholded, cv2.MORPH_OPEN, kernel)
+            #thresholded = cv2.morphologyEx(thresholded, cv2.MORPH_CLOSE, kernel)
+            pass
 
     #abilitazione modalita automatica
     if manualMode:
