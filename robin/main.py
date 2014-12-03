@@ -196,12 +196,13 @@ def tXrX(cameraFeed, thresholded):
     #creating one string
     stringData = data1.tostring() + "separatore" + data2.tostring()
     try:
-            client_socket.send( str(len(stringData)).ljust(16));
-            client_socket.send(stringData);
+            client_socket.send( str(len(stringData)).ljust(16))
+            client_socket.send(stringData)
     except:
             pass
     try:
             ricevuto = client_socket.recv(1024)
+            print ricevuto
             option = ricevuto.split(";")
             if option[0]=="end":
                 print "Ho ricevuto l'end dal Client"
@@ -267,7 +268,7 @@ rectDilataz = cv2.getStructuringElement( cv2.MORPH_RECT,(11,11))
 #imposto la sorgente per l'acquisizione
 # 0 -> cam predefinita
 # 1 -> cam esterna
-capture = cv2.VideoCapture(0);
+capture = cv2.VideoCapture(0)
 
 capture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
 capture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, IMAGE_HEIGHT)
