@@ -136,7 +136,7 @@ class ClientVideoApp:
         
     def __init__(self,master):
         TCP_IP = '192.168.1.136'
-        TCP_PORT = 32242
+        TCP_PORT = 32243
     
         #initialize socket
         try:

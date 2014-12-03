@@ -49,7 +49,7 @@ def initSocketThread():
         global client_socket
         global server_socket
         TCP_IP = ''
-        TCP_PORT = 32242
+        TCP_PORT = 32243
 
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
@@ -245,9 +245,11 @@ def tXrX(cameraFeed, thresholded):
                     print "automatico"
             elif option[0]=="nomotor":
                 if option[1]=="on":
-                    enableMotor = True
+                    enableMotor = 1
+                    print "Enabled motor"
                 elif option[1]=="off":
-                    enableMotor = False
+                    enableMotor = 0
+                    print "Disabled motor"
             else:
                 #devo continuare
                 pass
