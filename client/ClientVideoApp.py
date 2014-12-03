@@ -94,10 +94,10 @@ class ClientVideoApp:
         self.client_socket.send("comando;S;0")
 
     def enableMotor(self):
-        self.client_socket.send("nomotor;on")
+        self.client_socket.send("nomotor;on;")
 
     def disableMotor(self):
-        self.client_socket.send("nomotor;off")
+        self.client_socket.send("nomotor;off;")
         
     def recvall(self, sock, count):
         buf = b''
