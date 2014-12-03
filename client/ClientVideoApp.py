@@ -92,6 +92,12 @@ class ClientVideoApp:
 
     def stop(self):
         self.client_socket.send("comando;S;0")
+
+    def enableMotor(self):
+        self.client_socket.send("nomotor;on")
+
+    def disableMotor(self):
+        self.client_socket.send("nomotor;off")
         
     def recvall(self, sock, count):
         buf = b''
@@ -249,6 +255,12 @@ class ClientVideoApp:
         stopButton.pack()
         #stopButton.image = stopPhoto
         stopButton.place(x=335, y=625, height=50, width=100)
+        enableMotorButton = Button(master, command=self.enableMotor, bg="blue", relief=RAISED)
+        enableMotorButton.pack()
+        enableMotorButton.place(x=435, y=525, height=20, width=20)
+        disableMotorButton = Button(master, command=self.disableMotor, bg="red", relief=RAISED)
+        disableMotorButton.pack()
+        disableMotorButton.place(x=455, y=525, height=20, width=20)
         
 
 root = Tk()

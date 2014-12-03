@@ -184,7 +184,7 @@ def modeManual():
             motor.changeSpeed(0, 0)
 
 def tXrX(cameraFeed, thresholded):
-    global client_socket, server_socket, manualDir, manualSpeed, manualMode
+    global client_socket, server_socket, manualDir, manualSpeed, manualMode, enableMotor
     encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
     #encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
     #encoding frame and frame2
@@ -243,6 +243,11 @@ def tXrX(cameraFeed, thresholded):
                     manualMode=False
                     motor.changeSpeed(0,0)
                     print "automatico"
+            elif option[0]=="nomotor":
+                if option[1]=="on":
+                    enableMotor = True
+                elif option[1]=="off":
+                    enableMotor = False
             else:
                 #devo continuare
                 pass
