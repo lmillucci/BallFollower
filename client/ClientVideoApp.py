@@ -129,7 +129,7 @@ class ClientVideoApp:
         #self.client_socket.send(stringaDaMandare)
         
     def __init__(self,master):
-        TCP_IP = '192.168.1.121'
+        TCP_IP = '192.168.1.136'
         TCP_PORT = 32242
     
         #initialize socket
