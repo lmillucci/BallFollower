@@ -6,6 +6,7 @@ import socket
 import thread
 from arduino import Arduino
 
+
 #------ FINESTRE -----------
 mainGui = "Immagine acquisita"
 hsvWindow = "Immagine HSV"
@@ -36,6 +37,9 @@ enableMotor = 0 #Abilita/Disabilita i motori
 roaming_timer = 0 #conta il tempo in cui non vedo palline
 manualDir=None #direzione in modalita manuale
 manualSpeed=0 #velocita in modalita manuale
+maxRadius=0
+
+motor=Arduino()
 
 #variabili per la gestione del socket
 client_socket = None
@@ -107,7 +111,7 @@ def loadValue():
         print "ERROR: impossible load settings from file", detail
 
 def findCircles(thresholded, hsvFrame):
-    global found, ball_state
+    global found, ball_state, maxRadius
     #applico Hough
     circles = cv2.HoughCircles(thresholded, cv2.cv.CV_HOUGH_GRADIENT, dp=2, minDist=60, param1=100, param2=40, minRadius=5, maxRadius=60)
 
@@ -137,34 +141,34 @@ def findCircles(thresholded, hsvFrame):
     return x
 
 def follow(x):
-    global roaming_timer, spiral, target, enableMotor
+    global roaming_timer, spiral, target, enableMotor, maxRadius
     roaming_timer = 0 #quando vedo la pallina azzero il contatore dei frame in cui non la trovo
     spiral = 0 #azzero il raggio della spirale quando trovo una pallina
     #cv2.circle(cameraFeed, (c[0],c[1]), c[2], (0,255,0),2)
     if enableMotor:
             e = (int)(x)-target #variabile errore >0 oggetto a dx
 
-            #motor.setMotor(maxRadius,e)
+            motor.setMotor(maxRadius,e)
 
 def roaming():
     global roaming_timer
     #se non ho trovato nessuna pallina mi fermo
     roaming_timer += 1 #quando non vedo palline incremento il timer
-    #motor.changeSpeed(0,0)
+    motor.changeSpeed(0,0)
 
     if roaming_timer % 20 == 0 and roaming_timer<80:
             print "mi fermo"
-            #motor.changeSpeed(0, 0)
+            motor.changeSpeed(0, 0)
     elif roaming_timer % 15 == 0 and roaming_timer<80:
             print "inizio a girare"
-            #motor.changeSpeed(22, 35)
+            motor.changeSpeed(22, 35)
     if roaming_timer == 80:
             print "boh"
             # left=min(50,30+(7*spiral))
             #right=min(40,20+(7*spiral))
-            #motor.changeSpeed(30,30)
+            motor.changeSpeed(30,30)
     if roaming_timer > 180:
-            #motor.changeSpeed(0, 0)
+            motor.changeSpeed(0, 0)
             spiral+=1
             roaming_timer = 0
 
@@ -229,11 +233,11 @@ def tXrX(cameraFeed, thresholded):
             elif option[0]=="manuale":
                 if option[1]=="on":
                     manualMode=True
-                    #motor.changeSpeed(0,0)
+                    motor.changeSpeed(0,0)
                     print "manuale"
                 else:
                     manualMode=False
-                    #motor.changeSpeed(0,0)
+                    motor.changeSpeed(0,0)
                     print "automatico"
             else:
                 #devo continuare
@@ -332,5 +336,5 @@ while True:
 saveValue()
 cv2.destroyAllWindows()
 cv2.VideoCapture(0).release()
-#motor.onClose()
+motor.onClose()
 server_socket.close()
