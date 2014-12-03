@@ -283,7 +283,7 @@ except:
 while True:
 
     #Verifico se attivare il motore
-    enableMotor = cv2.getTrackbarPos("Motori I/O",settingWindow)
+    #enableMotor = cv2.getTrackbarPos("Motori I/O",settingWindow)
 
     #Verifico se attivare i frame
     enableFrame = cv2.getTrackbarPos("Aggiornamento FRAME", settingWindow)
