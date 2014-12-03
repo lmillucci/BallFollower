@@ -89,6 +89,9 @@ class ClientVideoApp:
 
     def fastForward(self):
         self.client_socket.send("comando;F;60")
+
+    def stop(self):
+        self.client_socket.send("comando;S;0")
         
     def recvall(self, sock, count):
         buf = b''
@@ -241,6 +244,11 @@ class ClientVideoApp:
         fastForwardButton.pack()
         fastForwardButton.image = fastForwardPhoto
         fastForwardButton.place(x=335,y=525,height=50,width=100)
+        #stopPhoto = ImageTk.PhotoImage(file="./image/Stop.png")
+        stopButton = Button(master, command=self.stop, bg="red", relief=RAISED)
+        stopButton.pack()
+        #stopButton.image = stopPhoto
+        stopButton.place(x=335, y=625, height=50, width=100)
         
 
 root = Tk()

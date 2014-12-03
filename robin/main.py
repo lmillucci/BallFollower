@@ -175,11 +175,13 @@ def roaming():
 def modeManual():
     global manualDir, manualSpeed
     if(manualDir=="F"):
-            motor.changeSpeed(manualSpeed,manualSpeed)
+            motor.changeSpeed(manualSpeed, manualSpeed)
     elif(manualDir=="L"):
             motor.changeSpeed(manualSpeed, 20)
     elif(manualDir=="R"):
             motor.changeSpeed(20, manualSpeed)
+    elif(manualDir=="S"):
+            motor.changeSpeed(0, 0)
 
 def tXrX(cameraFeed, thresholded):
     global client_socket, server_socket, manualDir, manualSpeed, manualMode
@@ -219,6 +221,8 @@ def tXrX(cameraFeed, thresholded):
                     print "Left at ",option[2]
                 elif(option[1]=="R"):
                     print "Right at ",option[2]
+                elif(option[1]=="S"):
+                    print "Stop"
                 manualDir=option[1]
                 manualSpeed=option[2]
             elif option[0]=="soglie":
