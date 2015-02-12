@@ -163,10 +163,9 @@ def roaming():
             print "inizio a girare"
             motor.changeSpeed(22, 35)
     if roaming_timer == 80:
-            print "boh"
-            # left=min(50,30+(7*spiral))
-            #right=min(40,20+(7*spiral))
-            motor.changeSpeed(30,30)
+            left=min(50,30+(7*spiral))
+            right=min(40,20+(7*spiral))
+            motor.changeSpeed(left,right)
     if roaming_timer > 180:
             motor.changeSpeed(0, 0)
             spiral+=1
