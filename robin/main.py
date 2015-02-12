@@ -26,7 +26,7 @@ IMAGE_WIDTH = 640
 IMAGE_HEIGHT = 480
 
 #------ PARAMETRI UTILI ----------
-manualMode=False #parametro per abilitare modalita maunale
+manualMode=True #parametro per abilitare modalita maunale
 found=False #parametro che indica se ho trovato la pallina
 ball_state= 0 #parametro per contare il numero di framein cui vedo la pallina
 roaming_timer = 0 #conta il tempo in cui non vedo palline

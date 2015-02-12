@@ -34,18 +34,18 @@ class ClientVideoApp:
         if self.socket_is_ready:
             #receiving video data by server
             #videoData = self.client_socket.recv(4096000)
-            
+
             length = self.recvall(self.client_socket,16)
             stringData = self.recvall( self.client_socket, int(length))
             data_list = stringData.split("separatore")
             data1 = numpy.fromstring(data_list[0], dtype='uint8')
             data2 = numpy.fromstring(data_list[1], dtype='uint8')
 
-            
+
             image1 = cv2.imdecode(data1, 1)
             image2 = cv2.imdecode(data2, 1)
             image1 = cv2.cvtColor(image1,cv2.COLOR_BGR2RGB)
-            
+
             #changing color space because PIL use RGB representation
             a1 = Image.fromarray(numpy.uint8(image1))
             a2 = Image.fromarray(numpy.uint8(image2))
@@ -55,7 +55,12 @@ class ClientVideoApp:
             threshVideo.configure(image=b2)
             master.update()
 
-            self.client_socket.send("soglie;"+str(self.minH.get())+";"+str(self.minS.get())+";"+str(self.minV.get())+";"+str(self.maxH.get())+";"+str(self.maxS.get())+";"+str(self.maxV.get()))
+            if self.last_command!=None:
+                self.client_socket.send(self.last_command)
+                self.last_command = None
+            else:
+                self.client_socket.send("soglie;"+str(self.minH.get())+";"+str(self.minS.get())+";"+str(self.minV.get())+";"+str(self.maxH.get())+";"+str(self.maxS.get())+";"+str(self.maxV.get()))
+
 
             #self.client_socket.send("continue")
             
@@ -65,39 +70,48 @@ class ClientVideoApp:
     def set_manual_mode(self):
         if self.manual_mode:
             self.manual_mode = False
-            self.client_socket.send("manuale;off;ok")
+            self.last_command = "manuale;off;ok"
+            #self.client_socket.send("manuale;off;ok")
             print "Manual mode: OFF" 
             offPhoto = ImageTk.PhotoImage(file="./image/Off.png")
             self.enableManualButton.config(image=offPhoto)
             self.enableManualButton.image = offPhoto #needed for save image from garbage collection
         else:
             self.manual_mode = True
-            self.client_socket.send("manuale;on;ok")
+            self.last_command = "manuale;on;ok"
+            #self.client_socket.send("manuale;on;ok")
             print "Manual mode: ON" 
             onPhoto = ImageTk.PhotoImage(file="./image/On.png")
             self.enableManualButton.config(image=onPhoto)
             self.enableManualButton.image = onPhoto #needed for save image from garbage collection
 
     def turn_right(self):
-        self.client_socket.send("comando;R;30")
+        #self.client_socket.send("comando;R;30")
+        self.last_command = "comando;R;30"
 
     def turn_left(self):
-        self.client_socket.send("comando;L;30")
+        #self.client_socket.send("comando;L;30")
+        self.last_command = "comando;L;30"
 
     def forward(self):
-        self.client_socket.send("comando;F;30")
+        #self.client_socket.send("comando;F;30")
+        self.last_command = "comando;F;30"
 
     def fastForward(self):
-        self.client_socket.send("comando;F;60")
+        #self.client_socket.send("comando;F;60")
+        self.last_command = "comando;F;60"
 
     def stop(self):
-        self.client_socket.send("comando;S;0")
+        #self.client_socket.send("comando;S;0")
+        self.last_command = "comando;S;0"
 
     def enableMotor(self):
-        self.client_socket.send("nomotor;on;")
+        #self.client_socket.send("nomotor;on;")
+        self.last_command = "nomotor;on;"
 
     def disableMotor(self):
-        self.client_socket.send("nomotor;off;")
+        #self.client_socket.send("nomotor;off;")
+        self.last_command = "nomotor;off;"
         
     def recvall(self, sock, count):
         buf = b''
@@ -107,6 +121,15 @@ class ClientVideoApp:
             buf += newbuf
             count -= len(newbuf)
         return buf
+
+    def reconnect(self):
+        try:
+            self.client_socket = None
+            self.client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            self.client_socket.connect((TCP_IP, TCP_PORT))
+            self.socket_is_ready = True
+        except:
+            self.socket_is_ready = False
 
     #callback functions for sliders
     def changeMinH(self,value):
@@ -135,7 +158,9 @@ class ClientVideoApp:
         #self.client_socket.send(stringaDaMandare)
         
     def __init__(self,master):
-        TCP_IP = '192.168.1.136'
+        self.last_command = None
+
+        TCP_IP = '192.168.1.1'
         TCP_PORT = 32243
     
         #initialize socket
