@@ -191,7 +191,7 @@ def modeManual2():
 
 def modeManual():
     global wm
-    if wm=None:
+    if wm is None:
         print("Premi 1+2 per connettere il wiimote")
         time.sleep(2)
         wm=cwiid.Wiimote()
