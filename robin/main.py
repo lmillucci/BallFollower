@@ -30,7 +30,7 @@ IMAGE_WIDTH = 640
 IMAGE_HEIGHT = 480
 
 #------ PARAMETRI UTILI ----------
-manualMode=True #parametro per abilitare modalita maunale
+manualMode=False #parametro per abilitare modalita maunale
 found=False #parametro che indica se ho trovato la pallina
 ball_state= 0 #parametro per contare il numero di framein cui vedo la pallina
 roaming_timer = 0 #conta il tempo in cui non vedo palline
@@ -43,6 +43,7 @@ manualDir=None #direzione in modalita manuale
 manualSpeed=0 #velocita in modalita manuale
 maxRadius=0
 wm=None
+manualSpeed2=0
 
 motor=Arduino()
 
@@ -54,7 +55,7 @@ def initSocketThread():
         global client_socket
         global server_socket
         TCP_IP = ''
-        TCP_PORT = 32243
+        TCP_PORT = 32245
 
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
@@ -190,7 +191,7 @@ def modeManual2():
 
 
 def modeManual():
-    global wm, manualSpeed
+    global wm, manualSpeed2
     if wm is None:
         print("Premi 1+2 per connettere il wiimote")
         time.sleep(2)
@@ -199,19 +200,23 @@ def modeManual():
     else:
         button = wm.state['buttons']
 
+	motor.changeSpeed(manualSpeed2, manualSpeed2)
+
         # & serve per fare il confronto bit a bit
         if(button & cwiid.BTN_LEFT):
             print("Ho premuto il tasto sinistro ",button)
+	    manualSpeed2 = 0
+	    motor.changeSpeed(manualSpeed2, manualSpeed2)
 
         if(button & cwiid.BTN_RIGHT):
             print("Ho premuto il tasto destro",button)
-            motor.changeSpeed(manualSpeed, manualSpeed)
+            motor.changeSpeed(manualSpeed2, manualSpeed2)
         if(button & cwiid.BTN_UP):
             print("Ho premuto il tasto alto",button)
-            motor.changeSpeed(manualSpeed, 20)
+            motor.changeSpeed(manualSpeed2, max(0,manualSpeed2-40))
         if(button & cwiid.BTN_DOWN):
             print("Ho premuto il tasto basso",button)
-            motor.changeSpeed(20, manualSpeed)
+            motor.changeSpeed(max(0,manualSpeed2-40) , manualSpeed2)
         if(button & cwiid.BTN_A):
             print("Ho premuto il tasto A",button)
 
@@ -220,10 +225,10 @@ def modeManual():
 
         if(button & cwiid.BTN_1):
             print("Ho premuto il tasto 1", button)
-            manualSpeed= max(manualSpeed-10,0)
+            manualSpeed2= max(manualSpeed2-10,0)
         if(button & cwiid.BTN_2):
             print("Ho premuto il tasto 2",button)
-            manualSpeed= min(manualSpeed+10,100)
+            manualSpeed2= min(manualSpeed2+10,100)
         if(button & cwiid.BTN_MINUS):
             print("Ho premuto il tasto -",button)
 
