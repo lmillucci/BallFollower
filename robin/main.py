@@ -4,7 +4,11 @@ import cv2
 import time
 import socket
 import thread
+import  cwiid
+import time
 from arduino import Arduino
+
+
 
 
 #------ FINESTRE -----------
@@ -38,6 +42,7 @@ roaming_timer = 0 #conta il tempo in cui non vedo palline
 manualDir=None #direzione in modalita manuale
 manualSpeed=0 #velocita in modalita manuale
 maxRadius=0
+wm=None
 
 motor=Arduino()
 
@@ -171,7 +176,7 @@ def roaming():
             spiral+=1
             roaming_timer = 0
 
-def modeManual():
+def modeManual2():
     global manualDir, manualSpeed
     if(manualDir=="F"):
             motor.changeSpeed(manualSpeed, manualSpeed)
@@ -181,6 +186,55 @@ def modeManual():
             motor.changeSpeed(20, manualSpeed)
     elif(manualDir=="S"):
             motor.changeSpeed(0, 0)
+
+
+
+def modeManual():
+    global wm
+    if wm=None:
+        print("Premi 1+2 per connettere il wiimote")
+        time.sleep(2)
+        wm=cwiid.Wiimote()
+        wm.rpt_mode = cwiid.RPT_BTN
+    else:
+        button = wm.state['buttons']
+
+        # & serve per fare il confronto bit a bit
+        if(button & cwiid.BTN_LEFT):
+            print("Ho premuto il tasto sinistro ",button)
+
+        if(button & cwiid.BTN_RIGHT):
+            print("Ho premuto il tasto destro",button)
+
+        if(button & cwiid.BTN_UP):
+            print("Ho premuto il tasto alto",button)
+
+        if(button & cwiid.BTN_DOWN):
+            print("Ho premuto il tasto basso",button)
+
+        if(button & cwiid.BTN_A):
+            print("Ho premuto il tasto A",button)
+
+        if(button & cwiid.BTN_B):
+            print("Ho premuto il tasto B",button)
+
+        if(button & cwiid.BTN_1):
+            print("Ho premuto il tasto 1", button)
+
+        if(button & cwiid.BTN_2):
+            print("Ho premuto il tasto 2",button)
+
+        if(button & cwiid.BTN_MINUS):
+            print("Ho premuto il tasto -",button)
+
+        if(button & cwiid.BTN_PLUS):
+            print("Ho premuto il tasto +",button)
+
+        if(button & cwiid.BTN_HOME):
+            print("Ho premuto il tasto HOME",button)
+            wm.rumble= True
+            time.sleep(1)
+            wm.rumble = False
 
 def tXrX(cameraFeed, thresholded):
     global client_socket, server_socket, manualDir, manualSpeed, manualMode, enableMotor
