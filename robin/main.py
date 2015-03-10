@@ -190,7 +190,7 @@ def modeManual2():
 
 
 def modeManual():
-    global wm
+    global wm, manualSpeed
     if wm is None:
         print("Premi 1+2 per connettere il wiimote")
         time.sleep(2)
@@ -205,13 +205,13 @@ def modeManual():
 
         if(button & cwiid.BTN_RIGHT):
             print("Ho premuto il tasto destro",button)
-
+            motor.changeSpeed(manualSpeed, manualSpeed)
         if(button & cwiid.BTN_UP):
             print("Ho premuto il tasto alto",button)
-
+            motor.changeSpeed(manualSpeed, 20)
         if(button & cwiid.BTN_DOWN):
             print("Ho premuto il tasto basso",button)
-
+            motor.changeSpeed(20, manualSpeed)
         if(button & cwiid.BTN_A):
             print("Ho premuto il tasto A",button)
 
@@ -220,10 +220,10 @@ def modeManual():
 
         if(button & cwiid.BTN_1):
             print("Ho premuto il tasto 1", button)
-
+            manualSpeed= max(manualSpeed-10,0)
         if(button & cwiid.BTN_2):
             print("Ho premuto il tasto 2",button)
-
+            manualSpeed= min(manualSpeed+10,100)
         if(button & cwiid.BTN_MINUS):
             print("Ho premuto il tasto -",button)
 
